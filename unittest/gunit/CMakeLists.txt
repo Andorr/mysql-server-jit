@@ -253,6 +253,7 @@ SET(SERVER_TESTS
   interesting_orders
   into_syntax
   item
+  item_arithmetic
   item_filter
   item_func_case
   item_func_now_local

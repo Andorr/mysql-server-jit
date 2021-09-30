@@ -27,6 +27,7 @@
 
 #include <cfloat>
 #include <climits>
+#include <iostream>
 #include <cmath>
 #include <cstdio>
 #include <cstring>
@@ -170,6 +171,7 @@ inline Item_result numeric_context_result_type(enum_field_types data_type,
 
 class DTCollation {
  public:
+
   const CHARSET_INFO *collation;
   Derivation derivation{DERIVATION_NONE};
   uint repertoire;
