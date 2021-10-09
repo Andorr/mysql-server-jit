@@ -1755,8 +1755,9 @@ ADD_SUBDIRECTORY(share)
 ADD_SUBDIRECTORY(libservices)
 
 IF(NOT WITHOUT_SERVER)
-  ADD_SUBDIRECTORY(testclients)
-  ADD_SUBDIRECTORY(sql)
+ADD_SUBDIRECTORY(testclients)
+ADD_SUBDIRECTORY(sql)
+ADD_SUBDIRECTORY(benchmarks)
 ENDIF()
 
 # Some unit tests need to link with the entire server, use this library:
