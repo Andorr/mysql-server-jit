@@ -100,7 +100,6 @@ class Item_func : public Item_result_field {
   Item **args;
 
  private:
-  Item *m_embedded_arguments[2];
 
   /// Allocates space for the given number of arguments, if needed. Uses
   /// #m_embedded_arguments if it's big enough.
@@ -121,6 +120,7 @@ class Item_func : public Item_result_field {
 
  public:
   uint arg_count;  ///< How many arguments in 'args'
+  Item *m_embedded_arguments[2];
   /// Changes argument and maintains any necessary invariants.
   virtual void set_arg_resolve(THD *, uint i, Item *arg) { args[i] = arg; }
   virtual uint argument_count() const { return arg_count; }

@@ -102,6 +102,7 @@ ADD_LIBRARY(gunit_large STATIC
   gunit_test_main_server.cc
   test_utils.cc
   thread_utils.cc
+  test_utils_benchmark.cc
 )
 ADD_DEPENDENCIES(gunit_small GenError)
 ADD_DEPENDENCIES(gunit_large GenError)
@@ -254,6 +255,7 @@ SET(SERVER_TESTS
   into_syntax
   item
   item_arithmetic
+  item_benchmarks
   item_filter
   item_func_case
   item_func_now_local
