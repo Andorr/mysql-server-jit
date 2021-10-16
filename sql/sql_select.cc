@@ -488,6 +488,8 @@ bool Sql_cmd_dml::execute(THD *thd) {
   Ignore_error_handler ignore_handler;
   Strict_error_handler strict_handler;
 
+  Query_block *query = nullptr;
+
   // If statement is preparable, it must be prepared
   assert(owner() == nullptr || is_prepared());
   // If statement is regular, it must be unprepared
@@ -607,6 +609,34 @@ bool Sql_cmd_dml::execute(THD *thd) {
     @todo remove in WL#6570 when unprepare() is gone.
   */
   DEBUG_SYNC(thd, "before_reset_query_plan");
+
+  std::cout << "-------------------------" << std::endl;
+
+  std::cout << "\nSELECT:" << std::endl;
+  query = unit->first_query_block();
+  for(auto f : query->fields) {
+    f->print_children(thd, 0);
+  }
+
+  if(query->get_table_list() != nullptr) {
+    std::cout << "\nFROM:" << std::endl;
+    std::cout << query->get_table_list()->table_name << std::endl;
+  }
+
+
+  if(query->where_cond() != nullptr) {
+    std::cout << "\nWHERE:" << std::endl;
+    query->where_cond()->print_children(thd, 0);
+  }
+
+  if(query->join_list != nullptr) {
+    std::cout << "\nJOIN:" << std::endl;
+    for(auto it = query->join_list->begin(); it != query->join_list->end(); it++) {
+      std::cout << (*it)->get_table_name() << std::endl;
+    }
+  }
+  
+  std::cout << "-------------------------" << std::endl;
 
   return false;
 

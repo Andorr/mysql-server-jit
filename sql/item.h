@@ -3406,6 +3406,9 @@ class Item : public Parse_tree_node {
    A helper funciton to ensure proper usage of CAST(.. AS .. ARRAY)
   */
   virtual void allow_array_cast() {}
+
+  void print_children(THD *thd, std::size_t depth = 0);
+  void print_val();
 };
 
 /**

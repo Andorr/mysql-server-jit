@@ -10358,3 +10358,50 @@ bool AllItemsAreEqual(const Item *const *a, const Item *const *b, int num_items,
   }
   return true;
 }
+
+void Item::print_val() {
+switch(this->result_type()) {
+      case Item_result::INT_RESULT: {
+          std::cout << "(" << this->val_int() << ")";
+          break;
+      }
+      case Item_result::DECIMAL_RESULT: {
+          my_decimal d;
+          this->val_decimal(&d);
+          std::cout << "(";
+          // print_decimal(d1);
+          std::cout << ")";
+          break;
+      }
+      case Item_result::REAL_RESULT: {
+          std::cout << "(" << this->val_real() << ")";
+          break;
+      }
+      case Item_result::STRING_RESULT: {
+          String s;
+          this->val_str(&s);
+          std::cout << "('" << s.c_ptr() << "')";
+          break;
+      }
+      case Item_result::ROW_RESULT:
+      case Item_result::INVALID_RESULT: {
+          std::cout << "(?)"; 
+      }
+  }
+}
+
+void Item::print_children(THD *thd, std::size_t depth) {
+  Item *it = this;
+  std::cout << std::string(depth, '\t') << typeid(*this).name();
+  if(this->basic_const_item() || !this->fixed) {
+      this->fix_fields(thd, &it);
+  }
+  this->print_val();
+  std::cout << std::endl;
+  if(Item_func* item = dynamic_cast<Item_func*>(this)) {
+      for(uint i = 0; i < item->arg_count; i++) {
+          Item *child = item->m_embedded_arguments[i];
+          child->print_children(thd, depth + 1);
+      }
+  }
+}
