@@ -21,3 +21,4 @@ source_downloads
 CMakeFiles/*
 VERSION.dep
 CMakeCache.txt
+build/
