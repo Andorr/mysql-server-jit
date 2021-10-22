@@ -614,28 +614,28 @@ bool Sql_cmd_dml::execute(THD *thd) {
 
   std::cout << "\nSELECT:" << std::endl;
   query = unit->first_query_block();
-  for(auto f : query->fields) {
+  for (auto f : query->fields) {
     f->print_children(thd, 0);
   }
 
-  if(query->get_table_list() != nullptr) {
+  if (query->get_table_list() != nullptr) {
     std::cout << "\nFROM:" << std::endl;
     std::cout << query->get_table_list()->table_name << std::endl;
   }
 
-
-  if(query->where_cond() != nullptr) {
+  if (query->where_cond() != nullptr) {
     std::cout << "\nWHERE:" << std::endl;
     query->where_cond()->print_children(thd, 0);
   }
 
-  if(query->join_list != nullptr) {
+  if (query->join_list != nullptr) {
     std::cout << "\nJOIN:" << std::endl;
-    for(auto it = query->join_list->begin(); it != query->join_list->end(); it++) {
+    for (auto it = query->join_list->begin(); it != query->join_list->end();
+         it++) {
       std::cout << (*it)->get_table_name() << std::endl;
     }
   }
-  
+
   std::cout << "-------------------------" << std::endl;
 
   return false;
@@ -1629,8 +1629,10 @@ void JOIN::reset() {
 
   if (!executed) return;
 
-  query_expression()->offset_limit_cnt = (ha_rows)(
-      query_block->offset_limit ? query_block->offset_limit->val_uint() : 0ULL);
+  query_expression()->offset_limit_cnt =
+      (ha_rows)(query_block->offset_limit
+                    ? query_block->offset_limit->val_uint()
+                    : 0ULL);
 
   group_sent = false;
   recursive_iteration_count = 0;

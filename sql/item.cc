@@ -1058,9 +1058,9 @@ bool Item_field::check_function_as_value_generator(uchar *checker_args) {
     func_args->err_code =
         (func_args->source == VGS_GENERATED_COLUMN)
             ? ER_GENERATED_COLUMN_REF_AUTO_INC
-            : (func_args->source == VGS_DEFAULT_EXPRESSION)
-                  ? ER_DEFAULT_VAL_GENERATED_REF_AUTO_INC
-                  : ER_CHECK_CONSTRAINT_REFERS_AUTO_INCREMENT_COLUMN;
+        : (func_args->source == VGS_DEFAULT_EXPRESSION)
+            ? ER_DEFAULT_VAL_GENERATED_REF_AUTO_INC
+            : ER_CHECK_CONSTRAINT_REFERS_AUTO_INCREMENT_COLUMN;
     return true;
   }
 
@@ -2827,8 +2827,9 @@ void Item_field::reset_field(Field *f) {
 const char *Item_ident::full_name() const {
   char *tmp;
   if (!table_name || !field_name)
-    return field_name ? field_name
-                      : item_name.is_set() ? item_name.ptr() : "tmp_field";
+    return field_name           ? field_name
+           : item_name.is_set() ? item_name.ptr()
+                                : "tmp_field";
   if (db_name && db_name[0]) {
     tmp = (char *)(*THR_MALLOC)
               ->Alloc(strlen(db_name) + strlen(table_name) +
@@ -2867,9 +2868,9 @@ void Item_ident::print(const THD *thd, String *str, enum_query_type query_type,
   }
 
   if (!table_name_arg || !field_name || !field_name[0]) {
-    const char *nm = (field_name && field_name[0])
-                         ? field_name
-                         : item_name.is_set() ? item_name.ptr() : "tmp_field";
+    const char *nm = (field_name && field_name[0]) ? field_name
+                     : item_name.is_set()          ? item_name.ptr()
+                                                   : "tmp_field";
     append_identifier(thd, str, nm, strlen(nm));
     return;
   }
@@ -6539,9 +6540,9 @@ bool Item_float::eq(const Item *arg, bool) const {
 }
 
 inline uint char_val(char X) {
-  return (uint)(X >= '0' && X <= '9'
-                    ? X - '0'
-                    : X >= 'A' && X <= 'Z' ? X - 'A' + 10 : X - 'a' + 10);
+  return (uint)(X >= '0' && X <= '9'   ? X - '0'
+                : X >= 'A' && X <= 'Z' ? X - 'A' + 10
+                                       : X - 'a' + 10);
 }
 
 Item_hex_string::Item_hex_string() { hex_string_init("", 0); }
@@ -10360,48 +10361,48 @@ bool AllItemsAreEqual(const Item *const *a, const Item *const *b, int num_items,
 }
 
 void Item::print_val() {
-switch(this->result_type()) {
-      case Item_result::INT_RESULT: {
-          std::cout << "(" << this->val_int() << ")";
-          break;
-      }
-      case Item_result::DECIMAL_RESULT: {
-          my_decimal d;
-          this->val_decimal(&d);
-          std::cout << "(";
-          // print_decimal(d1);
-          std::cout << ")";
-          break;
-      }
-      case Item_result::REAL_RESULT: {
-          std::cout << "(" << this->val_real() << ")";
-          break;
-      }
-      case Item_result::STRING_RESULT: {
-          String s;
-          this->val_str(&s);
-          std::cout << "('" << s.c_ptr() << "')";
-          break;
-      }
-      case Item_result::ROW_RESULT:
-      case Item_result::INVALID_RESULT: {
-          std::cout << "(?)"; 
-      }
+  switch (this->result_type()) {
+    case Item_result::INT_RESULT: {
+      std::cout << "(" << this->val_int() << ")";
+      break;
+    }
+    case Item_result::DECIMAL_RESULT: {
+      my_decimal d;
+      this->val_decimal(&d);
+      std::cout << "(";
+      // print_decimal(d1);
+      std::cout << ")";
+      break;
+    }
+    case Item_result::REAL_RESULT: {
+      std::cout << "(" << this->val_real() << ")";
+      break;
+    }
+    case Item_result::STRING_RESULT: {
+      String s;
+      this->val_str(&s);
+      std::cout << "('" << s.c_ptr() << "')";
+      break;
+    }
+    case Item_result::ROW_RESULT:
+    case Item_result::INVALID_RESULT: {
+      std::cout << "(?)";
+    }
   }
 }
 
 void Item::print_children(THD *thd, std::size_t depth) {
   Item *it = this;
-  std::cout << std::string(depth, '\t') << typeid(*this).name();
-  if(this->basic_const_item() || !this->fixed) {
-      this->fix_fields(thd, &it);
+  std::cout << depth << " " << (string) typeid(*this).name() << " ";
+  if (this->basic_const_item() || !this->fixed) {
+    this->fix_fields(thd, &it);
   }
   this->print_val();
   std::cout << std::endl;
-  if(Item_func* item = dynamic_cast<Item_func*>(this)) {
-      for(uint i = 0; i < item->arg_count; i++) {
-          Item *child = item->m_embedded_arguments[i];
-          child->print_children(thd, depth + 1);
-      }
+  if (Item_func *item = dynamic_cast<Item_func *>(this)) {
+    for (uint i = 0; i < item->arg_count; i++) {
+      Item *child = item->m_embedded_arguments[i];
+      child->print_children(thd, depth + 1);
+    }
   }
 }
