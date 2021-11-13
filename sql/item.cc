@@ -10421,7 +10421,13 @@ void Item::print_children(THD *thd, std::size_t depth) {
   }
   this->print_val();
   std::cout << std::endl;
-  if (Item_func *item = dynamic_cast<Item_func *>(this)) {
+
+  if (Item_cond *item = dynamic_cast<Item_cond *>(this)) {
+    List<Item> list = *item->argument_list();
+    for (uint i = 0; i < list.elements; i++) {
+      list[i]->print_children(thd, depth + 1);
+    }
+  } else if (Item_func *item = dynamic_cast<Item_func *>(this)) {
     for (uint i = 0; i < item->arg_count; i++) {
       Item *child = item->m_embedded_arguments[i];
       child->print_children(thd, depth + 1);
