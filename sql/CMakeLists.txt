@@ -70,7 +70,7 @@ MYSQL_ADD_EXECUTABLE(gen_lex_token
   gen_lex_token.cc
   DEPENDENCIES GenServerSource
   SKIP_INSTALL
-  )
+)
 
 MY_CHECK_CXX_COMPILER_WARNING("-Wmissing-profile" HAS_MISSING_PROFILE)
 IF(HAS_MISSING_PROFILE)
@@ -784,7 +784,7 @@ SET(SQL_SOURCE
   srv_session.cc
   srv_session_info_service.cc
   srv_session_service.cc
-  )
+)
 
 IF(NOT HAVE_SETNS)
   LIST(REMOVE_ITEM SQL_SOURCE ../sql-common/net_ns.cc)
@@ -874,13 +874,53 @@ IF(HAVE_NO_BUILTIN_MEMCMP)
 ENDIF()
 
 
+#
+#    Link LLVM
+#
+find_package(ZLIB REQUIRED)
+find_package(LLVM REQUIRED CONFIG)
+
+message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
+message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
+message(STATUS "LLVM_ENABLE_ZLIB: ${LLVM_ENABLE_ZLIB}")
+set(LLVM_ENABLE_ZLIB 0)
+message(STATUS "LLVM_ENABLE_ZLIB: ${LLVM_ENABLE_ZLIB}")
+
+
+include_directories(${LLVM_INCLUDE_DIRS})
+separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
+add_definitions(${LLVM_DEFINITIONS})
+
+llvm_map_components_to_libnames(
+  LLVM_LIBS 
+  support
+  core
+  irreader
+  passes
+  analysis
+  executionengine
+  scalaropts
+  runtimedyld
+  object
+  instcombine
+  orcjit
+  x86asmparser
+  x86codegen
+  x86desc
+  x86disassembler
+  x86info
+  mcjit
+  jitlink
+  )
+message(STATUS "LLVM_LIBS: ${LLVM_LIBS}")
+  
 ADD_LIBRARY(sql_main STATIC ${SQL_SOURCE})
 ADD_DEPENDENCIES(sql_main GenServerSource)
 ADD_DEPENDENCIES(sql_main GenDigestServerSource)
 ADD_DEPENDENCIES(sql_main GenBootstrapPriv)
 ADD_DEPENDENCIES(sql_main GenSysSchema)
 TARGET_LINK_LIBRARIES(sql_main ${MYSQLD_STATIC_PLUGIN_LIBS}
-  mysql_server_component_services mysys strings vio
+  mysql_server_component_services mysys strings vio ${LLVM_LIBS}
   binlogevents_static ${LIBWRAP} ${LIBDL} ${SSL_LIBRARIES})
 
 # sql/immutable_string.h uses
