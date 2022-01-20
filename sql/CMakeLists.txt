@@ -418,6 +418,7 @@ SET(SQL_SHARED_SOURCES
   iterators/ref_row_iterators.cc
   iterators/sorting_iterator.cc
   iterators/window_iterators.cc
+  jit/jit_exec_ctx.cc
   join_optimizer/access_path.cc
   join_optimizer/build_interesting_orders.cc
   join_optimizer/common_subexpression_elimination.cc
