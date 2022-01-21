@@ -1,15 +1,14 @@
 #ifndef JIT_BUILDER_CTX_H
 #define JIT_BUILDER_CTX_H
 
+#include "llvm/IR/IRBuilder.h"
+#include "llvm/IR/LLVMContext.h"
+#include "llvm/IR/Module.h"
+#include "llvm/IR/PassManager.h"
+
 namespace jit {
 
-#include "llvm/IR/IRBuilder.h"
-#include "llvm/IR/PassManager.h"
-#include "llvm/IR/Value.h"
-
 class JITBuilderContext {
-  llvm::Value *value;
-
   std::unique_ptr<llvm::Module> functionModule;
   std::unique_ptr<llvm::IRBuilder<>> builder;
   std::unique_ptr<llvm::LLVMContext> context;
