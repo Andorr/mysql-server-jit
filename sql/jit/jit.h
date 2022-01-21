@@ -18,12 +18,11 @@
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/PassManager.h"
 #include "llvm/IR/Value.h"
-namespace jit {
 
 #include "jit_builder_ctx.h"
 #include "jit_exec_ctx.h"
 
-using namespace jit;
+namespace jit {
 
 class Item;
 

@@ -110,6 +110,8 @@
 #include "sql_string.h"
 #include "template_utils.h"
 
+#include "jit/jit.h"
+
 using std::max;
 using std::min;
 
@@ -283,6 +285,8 @@ bool JOIN::optimize(bool finalize_access_paths) {
   DBUG_TRACE;
 
   uint no_jbuf_after = UINT_MAX;
+
+  auto jit_exec_ctx = jit::new_jit_exec_ctx();
 
   assert(query_block->leaf_table_count == 0 ||
          thd->lex->is_query_tables_locked() ||
