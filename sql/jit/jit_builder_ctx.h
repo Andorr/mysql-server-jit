@@ -9,6 +9,7 @@
 namespace jit {
 
 class JITBuilderContext {
+ private:
   std::unique_ptr<llvm::Module> functionModule;
   std::unique_ptr<llvm::IRBuilder<>> builder;
   std::unique_ptr<llvm::LLVMContext> context;
@@ -16,6 +17,7 @@ class JITBuilderContext {
 
   llvm::Function *mainFunction;
 
+ public:
   ~JITBuilderContext() {
     if (functionModule != nullptr) {
       auto ptr = functionModule.release();

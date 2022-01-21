@@ -12,3 +12,16 @@ using namespace jit;
 std::unique_ptr<JITExecutionContext> JITExecutionContext::new_exec_context() {
   return nullptr;
 }
+
+std::unique_ptr<JITBuilderContext> JITExecutionContext::new_builder_context() {
+  return nullptr;
+}
+
+Error JITExecutionContext::add_module(ThreadSafeModule tsm) {
+  auto rt = this->main_jd.getDefaultResourceTracker();
+  return compile_layer.add(rt, std::move(tsm));
+}
+
+Expected<JITEvaluatedSymbol> JITExecutionContext::lookup(StringRef name) {
+  return exec_session->lookup({&main_jd}, mangle(name.str()));
+}
