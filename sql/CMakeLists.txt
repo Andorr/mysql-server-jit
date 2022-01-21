@@ -894,7 +894,8 @@ set(LLVM_ENABLE_ZLIB 0)
 message(STATUS "LLVM_ENABLE_ZLIB: ${LLVM_ENABLE_ZLIB}")
 
 
-include_directories(${LLVM_INCLUDE_DIRS})
+message(STATUS "LLVM_INCLUDE_DIRS: ${LLVM_INCLUDE_DIRS}")
+# include_directories(${LLVM_INCLUDE_DIRS})
 separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
 add_definitions(${LLVM_DEFINITIONS})
 
