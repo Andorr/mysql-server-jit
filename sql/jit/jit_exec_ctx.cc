@@ -1,16 +1,37 @@
+#include "iostream"
 #include "memory"
+#include "optional"
 
 #include "llvm/ADT/StringRef.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/PassManager.h"
 #include "llvm/IR/Value.h"
 
+#include "jit_common.h"
 #include "jit_exec_ctx.h"
 
 using namespace jit;
 
 std::unique_ptr<JITExecutionContext> JITExecutionContext::new_exec_context() {
-  return nullptr;
+  auto epc = SelfExecutorProcessControl::Create();
+  if (!epc) {
+    debug_print("error: %s", "SelfExecutorProcessControl");
+    return nullptr;
+  }
+
+  auto exec_session = std::make_unique<ExecutionSession>(std::move(*epc));
+
+  JITTargetMachineBuilder jtmb(
+      exec_session->getExecutorProcessControl().getTargetTriple());
+
+  auto dl = jtmb.getDefaultDataLayoutForTarget();
+  if (!dl) {
+    debug_print("error: %s", "SelfExecutorProcessControl");
+    return nullptr;
+  }
+
+  return std::make_unique<JITExecutionContext>(std::move(exec_session),
+                                               std::move(jtmb), std::move(*dl));
 }
 
 std::unique_ptr<JITBuilderContext> JITExecutionContext::new_builder_context() {
