@@ -806,7 +806,8 @@ class Item : public Parse_tree_node {
   friend class udf_handler;
   virtual bool is_expensive_processor(uchar *) { return false; }
 
-  // COMPILABLE
+  // COMPILABLE CAN COMPILE ITEM DEFINITION
+ public:
   virtual bool can_compile() { return false; }
 
  protected:
@@ -4899,6 +4900,12 @@ class Item_int : public Item_num {
   bool eq(const Item *, bool) const override;
   bool check_partition_func_processor(uchar *) override { return false; }
   bool check_function_as_value_generator(uchar *) override { return false; }
+
+  // COMPILABLE CAN COMPILE ITEM_INT OVERRIDE
+  bool can_compile() override {
+    // Item_int can always be compiled
+    return true;
+  }
 };
 
 /**
