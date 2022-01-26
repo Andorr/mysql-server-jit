@@ -1008,11 +1008,10 @@ bool Arg_comparator::get_date_from_const(Item *date_arg, Item *str_arg,
       value = get_date_from_str(thd, str_val, t_type, date_arg->item_name.ptr(),
                                 &error);
       if (error) {
-        const char *typestr = (date_arg_type == MYSQL_TYPE_DATE)
-                                  ? "DATE"
-                                  : (date_arg_type == MYSQL_TYPE_DATETIME)
-                                        ? "DATETIME"
-                                        : "TIMESTAMP";
+        const char *typestr = (date_arg_type == MYSQL_TYPE_DATE) ? "DATE"
+                              : (date_arg_type == MYSQL_TYPE_DATETIME)
+                                  ? "DATETIME"
+                                  : "TIMESTAMP";
 
         ErrConvString err(str_val->ptr(), str_val->length(),
                           thd->variables.character_set_client);
@@ -2488,6 +2487,11 @@ longlong Item_func_eq::val_int() {
   return value == 0 ? 1 : 0;
 }
 
+// COMPILABLE CAN COMPILE ITEM_FUNC_EQ OVERRIDE IMPLEMENTATION
+bool Item_func_eq::can_compile() {
+  return args[0]->can_compile() && args[1]->can_compile();
+}
+
 /** Same as Item_func_eq, but NULL = NULL. */
 
 bool Item_func_equal::resolve_type(THD *thd) {
@@ -3093,10 +3097,9 @@ static inline longlong compare_between_int_result(
     bool negated, Item **args, bool *null_value) {
   {
     LLorULL a, b, value;
-    value = compare_as_temporal_times
-                ? args[0]->val_time_temporal()
-                : compare_as_temporal_dates ? args[0]->val_date_temporal()
-                                            : args[0]->val_int();
+    value = compare_as_temporal_times   ? args[0]->val_time_temporal()
+            : compare_as_temporal_dates ? args[0]->val_date_temporal()
+                                        : args[0]->val_int();
     if ((*null_value = args[0]->null_value)) return 0; /* purecov: inspected */
     if (compare_as_temporal_times) {
       a = args[1]->val_time_temporal();
