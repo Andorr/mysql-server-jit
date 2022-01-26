@@ -26,10 +26,9 @@ namespace jit {
 
 class Item;
 
-std::optional<std::unique_ptr<JITExecutionContext>> new_jit_exec_ctx();
+std::unique_ptr<JITExecutionContext> new_jit_exec_ctx();
 std::optional<int> compile_where_cond(
     std::unique_ptr<JITExecutionContext> *jit_exec_ctx, Item *where_cond);
-
 };  // namespace jit
 
 #endif

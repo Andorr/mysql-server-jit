@@ -420,6 +420,7 @@ SET(SQL_SHARED_SOURCES
   iterators/window_iterators.cc
   jit/jit.cc
   jit/jit_exec_ctx.cc
+  jit/item_compiled.cc
   join_optimizer/access_path.cc
   join_optimizer/build_interesting_orders.cc
   join_optimizer/common_subexpression_elimination.cc
@@ -902,8 +903,8 @@ add_definitions(${LLVM_DEFINITIONS})
 
 llvm_map_components_to_libnames(
   LLVM_LIBS 
-  support
   core
+  support
   irreader
   passes
   analysis
@@ -918,7 +919,6 @@ llvm_map_components_to_libnames(
   x86desc
   x86disassembler
   x86info
-  mcjit
   jitlink
   )
 message(STATUS "LLVM_LIBS: ${LLVM_LIBS}")
