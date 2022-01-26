@@ -246,6 +246,7 @@ SET(SERVER_TESTS
   item_json_func
   item_like
   item_timefunc
+  jit_exec_ctx
   join_syntax
   join_tab_sort
   json_binary

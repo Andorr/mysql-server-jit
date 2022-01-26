@@ -2284,6 +2284,18 @@ INCLUDE(CPack)
 
 STRING_APPEND(CMAKE_C_FLAGS   " -Wno-error")
 STRING_APPEND(CMAKE_CXX_FLAGS " -Wno-error")
+STRING_APPEND(CMAKE_C_LINK_FLAGS " -fuse-ld=mold")
+STRING_APPEND(CMAKE_CXX_LINK_FLAGS " -fuse-ld=mold")
+
+if ("${CMAKE_GENERATOR}" STREQUAL "Ninja")
+  if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+      STRING_APPEND(CMAKE_C_FLAGS " -fdiagnostics-color=always")
+      STRING_APPEND(CMAKE_CXX_FLAGS " -fdiagnostics-color=always")
+  elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+      STRING_APPEND(CMAKE_C_FLAGS " -fcolor-diagnostics")
+      STRING_APPEND(CMAKE_CXX_FLAGS " -fcolor-diagnostics")
+  endif ()
+endif()
 
 # C/CXX compiler flags consist of:
 # CPPFLAGS        Taken from environment, see above.

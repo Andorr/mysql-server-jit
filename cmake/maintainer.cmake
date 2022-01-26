@@ -195,3 +195,4 @@ MACRO(ADD_WSHADOW_WARNING)
     ADD_COMPILE_OPTIONS("-Wshadow-uncaptured-local")
   ENDIF()
 ENDMACRO()
+
