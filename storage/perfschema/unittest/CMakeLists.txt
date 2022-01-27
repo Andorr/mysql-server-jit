@@ -20,6 +20,46 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 
+
+find_package(ZLIB REQUIRED)
+find_package(LLVM REQUIRED CONFIG)
+
+message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
+message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
+message(STATUS "LLVM_ENABLE_ZLIB: ${LLVM_ENABLE_ZLIB}")
+set(LLVM_ENABLE_ZLIB 0)
+message(STATUS "LLVM_ENABLE_ZLIB: ${LLVM_ENABLE_ZLIB}")
+
+
+message(STATUS "LLVM_INCLUDE_DIRS: ${LLVM_INCLUDE_DIRS}")
+# include_directories(${LLVM_INCLUDE_DIRS})
+separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
+add_definitions(${LLVM_DEFINITIONS})
+
+llvm_map_components_to_libnames(
+  LLVM_LIBS 
+  core
+  support
+  irreader
+  passes
+  analysis
+  executionengine
+  scalaropts
+  runtimedyld
+  object
+  instcombine
+  orcjit
+  x86asmparser
+  x86codegen
+  x86desc
+  x86disassembler
+  x86info
+  jitlink
+  )
+message(STATUS "LLVM_LIBS: ${LLVM_LIBS}")
+
+
+
 DISABLE_MISSING_PROFILE_WARNING()
 ADD_DEFINITIONS(-DMYSQL_SERVER)
 
@@ -30,7 +70,7 @@ ADD_DEPENDENCIES(pfs_server_stubs GenError)
 MACRO (PFS_ADD_TEST name)
   MYSQL_ADD_EXECUTABLE(${name}-t ${name}-t.cc ADD_TEST ${name})
   TARGET_LINK_LIBRARIES(${name}-t
-    mytap perfschema mysys pfs_server_stubs strings ${ICU_LIBRARIES})
+    mytap perfschema mysys pfs_server_stubs strings ${ICU_LIBRARIES} ${LLVM_LIBS})
 ENDMACRO()
 
 SET(tests

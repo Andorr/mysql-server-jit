@@ -25,6 +25,7 @@
 
 #include <sys/types.h>
 
+#include <cassert>
 #include <cfloat>
 #include <climits>
 #include <cmath>
@@ -72,8 +73,10 @@
 #include "sql_string.h"
 #include "template_utils.h"
 
+// #ifndef FUCK_YACC
 #include "llvm/IR/Value.h"
-#include "sql/jit/jit_builder_ctx.h"
+// #include "sql/jit/jit_builder_ctx.h"
+// #endif
 
 class Item;
 class Item_field;
@@ -3453,9 +3456,12 @@ class Item : public Parse_tree_node {
    * JIT implementation
    */
 
-  virtual llvm::Value *codegen(jit::JITBuilderContext *context) const {
+  // #ifndef FUCK_YACC
+  /* virtual llvm::Value *codegen(
+      [[maybe_unused]] jit::JITBuilderContext *context) const {
     return nullptr;
-  }
+  } */
+  // #endif
 };
 
 /**

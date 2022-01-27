@@ -2282,8 +2282,8 @@ ENDIF(DOXYGEN_FOUND)
 INCLUDE(CPack)
 
 
-STRING_APPEND(CMAKE_C_FLAGS   " -Wno-error `llvm-config --libs core support --cxxflags --ldflags`")
-STRING_APPEND(CMAKE_CXX_FLAGS " -Wno-error `llvm-config --libs core support --cxxflags --ldflags`")
+STRING_APPEND(CMAKE_C_FLAGS   " -Wno-error")
+STRING_APPEND(CMAKE_CXX_FLAGS " -Wno-error")
 #STRING_APPEND(CMAKE_C_LINK_FLAGS " -fuse-ld=mold")
 #STRING_APPEND(CMAKE_CXX_LINK_FLAGS " -fuse-ld=mold")
 

@@ -20,6 +20,47 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 
+#
+#    Link LLVM
+#
+find_package(ZLIB REQUIRED)
+find_package(LLVM REQUIRED CONFIG)
+
+message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
+message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
+message(STATUS "LLVM_ENABLE_ZLIB: ${LLVM_ENABLE_ZLIB}")
+set(LLVM_ENABLE_ZLIB 0)
+message(STATUS "LLVM_ENABLE_ZLIB: ${LLVM_ENABLE_ZLIB}")
+
+
+message(STATUS "LLVM_INCLUDE_DIRS: ${LLVM_INCLUDE_DIRS}")
+# include_directories(${LLVM_INCLUDE_DIRS})
+separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
+add_definitions(${LLVM_DEFINITIONS})
+
+llvm_map_components_to_libnames(
+  LLVM_LIBS 
+  core
+  support
+  irreader
+  passes
+  analysis
+  executionengine
+  scalaropts
+  runtimedyld
+  object
+  instcombine
+  orcjit
+  x86asmparser
+  x86codegen
+  x86desc
+  x86disassembler
+  x86info
+  jitlink
+  )
+message(STATUS "LLVM_LIBS: ${LLVM_LIBS}")
+
+
 INCLUDE_DIRECTORIES(SYSTEM ${BOOST_PATCHES_DIR} ${BOOST_INCLUDE_DIR})
 
 MY_INCLUDE_SYSTEM_DIRECTORIES(ICU)
@@ -69,6 +110,7 @@ SET_SOURCE_FILES_PROPERTIES(
 MYSQL_ADD_EXECUTABLE(gen_lex_token
   gen_lex_token.cc
   DEPENDENCIES GenServerSource
+  # LINK_LIBRARIES ${LLVM_LIBS}
   SKIP_INSTALL
 )
 
@@ -882,46 +924,6 @@ IF(HAVE_NO_BUILTIN_MEMCMP)
   )
 ENDIF()
 
-
-#
-#    Link LLVM
-#
-find_package(ZLIB REQUIRED)
-find_package(LLVM REQUIRED CONFIG)
-
-message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
-message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
-message(STATUS "LLVM_ENABLE_ZLIB: ${LLVM_ENABLE_ZLIB}")
-set(LLVM_ENABLE_ZLIB 0)
-message(STATUS "LLVM_ENABLE_ZLIB: ${LLVM_ENABLE_ZLIB}")
-
-
-message(STATUS "LLVM_INCLUDE_DIRS: ${LLVM_INCLUDE_DIRS}")
-# include_directories(${LLVM_INCLUDE_DIRS})
-separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
-add_definitions(${LLVM_DEFINITIONS})
-
-llvm_map_components_to_libnames(
-  LLVM_LIBS 
-  core
-  support
-  irreader
-  passes
-  analysis
-  executionengine
-  scalaropts
-  runtimedyld
-  object
-  instcombine
-  orcjit
-  x86asmparser
-  x86codegen
-  x86desc
-  x86disassembler
-  x86info
-  jitlink
-  )
-message(STATUS "LLVM_LIBS: ${LLVM_LIBS}")
   
 ADD_LIBRARY(sql_main STATIC ${SQL_SOURCE})
 ADD_DEPENDENCIES(sql_main GenServerSource)
@@ -1304,6 +1306,7 @@ ELSE()
     ADD_CUSTOM_TARGET(GenBison_hints DEPENDS ${BISON_hints_parser_OUTPUTS})
   ENDIF()
 
+
 ENDIF()
 
 SET_SOURCE_FILES_PROPERTIES(
@@ -1394,3 +1397,4 @@ ADD_CUSTOM_TARGET(distclean
 ADD_CUSTOM_TARGET(show-dist-name
   COMMAND ${CMAKE_COMMAND} -E echo "${CPACK_PACKAGE_FILE_NAME}"
 )
+
