@@ -22,9 +22,10 @@
 #include "jit_builder_ctx.h"
 #include "jit_exec_ctx.h"
 
-namespace jit {
-
 class Item;
+// class Item_int;
+
+namespace jit {
 
 std::unique_ptr<JITExecutionContext> new_jit_exec_ctx();
 std::optional<int> compile_where_cond(

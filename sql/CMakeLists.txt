@@ -462,6 +462,7 @@ SET(SQL_SHARED_SOURCES
   iterators/window_iterators.cc
   jit/jit.cc
   jit/jit_exec_ctx.cc
+  jit/codegen/jit_item_int.cc
   jit/item_compiled.cc
   join_optimizer/access_path.cc
   join_optimizer/build_interesting_orders.cc
@@ -896,7 +897,7 @@ ENDIF()
 IF(MY_COMPILER_IS_GNU_OR_CLANG)
   ADD_COMPILE_FLAGS(${CMAKE_CURRENT_BINARY_DIR}/sql_yacc.cc
                     ${CMAKE_CURRENT_BINARY_DIR}/sql_hints.yy.cc
-                    COMPILE_FLAGS "-Wno-undef")
+                    COMPILE_FLAGS "-Wno-undef -DJIT_DISABLE")
   # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=98753
   IF(MY_COMPILER_IS_GNU AND NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 11)
     ADD_COMPILE_FLAGS(

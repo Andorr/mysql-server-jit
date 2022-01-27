@@ -31,13 +31,8 @@ void Item_compiled::codegen_item() {
       llvm::BasicBlock::Create(*builder_ctx->context, "entry", function);
   builder_ctx->builder->SetInsertPoint(entry);
 
-  llvm::Value *a =
-      llvm::ConstantInt::get(*builder_ctx->context, llvm::APInt(32, 2, true));
-  llvm::Value *b =
-      llvm::ConstantInt::get(*builder_ctx->context, llvm::APInt(32, 4, true));
-
-  llvm::Value *sum = builder_ctx->builder->CreateAdd(a, b, "a+b");
-  builder_ctx->builder->CreateRet(sum);
+  llvm::Value *value = this->item->codegen(builder_ctx.get());
+  builder_ctx->builder->CreateRet(value);
 }
 
 void Item_compiled::jit_compile(jit::JITExecutionContext *exec_ctx) {
