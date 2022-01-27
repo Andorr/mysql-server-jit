@@ -814,6 +814,10 @@ class Item : public Parse_tree_node {
   friend class udf_handler;
   virtual bool is_expensive_processor(uchar *) { return false; }
 
+  // COMPILABLE CAN COMPILE ITEM DEFINITION
+ public:
+  virtual bool can_compile() { return false; }
+
  protected:
   /**
      Sets the result value of the function an empty string, using the current
@@ -4917,12 +4921,20 @@ class Item_int : public Item_num {
   bool check_partition_func_processor(uchar *) override { return false; }
   bool check_function_as_value_generator(uchar *) override { return false; }
 
+
 #ifndef JIT_DISABLE
   llvm::Value *codegen(
       [[maybe_unused]] jit::JITBuilderContext *context) override {
     return jit::codegen_item_int(this, context);
   }
 #endif
+
+  // COMPILABLE CAN COMPILE ITEM_INT OVERRIDE
+  bool can_compile() override {
+    // Item_int can always be compiled
+    return true;
+  }
+
 };
 
 /**

@@ -982,6 +982,9 @@ class Item_func_eq : public Item_func_comparison {
   Item *equality_substitution_transformer(uchar *arg) override;
   bool gc_subst_analyzer(uchar **) override { return true; }
 
+  // COMPILABLE CAN COMPILE ITEM_FUNC_EQ OVERRIDE
+  bool can_compile() override;
+
   float get_filtering_effect(THD *thd, table_map filter_for_table,
                              table_map read_tables,
                              const MY_BITMAP *fields_to_ignore,
