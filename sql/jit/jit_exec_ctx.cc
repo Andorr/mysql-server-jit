@@ -35,7 +35,20 @@ std::unique_ptr<JITExecutionContext> JITExecutionContext::new_exec_context() {
 }
 
 std::unique_ptr<JITBuilderContext> JITExecutionContext::new_builder_context() {
-  return nullptr;
+  auto builder_context = std::make_unique<JITBuilderContext>();
+
+  builder_context->context = std::make_unique<LLVMContext>();
+
+  builder_context->builder =
+      std::make_unique<llvm::IRBuilder<>>(*builder_context->context);
+
+  builder_context->func_module = std::make_unique<llvm::Module>(
+      "item_compiled", *builder_context->context);
+  builder_context->func_module->setDataLayout(this->get_data_layout());
+
+  builder_context->pass_manager = std::make_unique<llvm::FunctionPassManager>();
+
+  return builder_context;
 }
 
 Error JITExecutionContext::add_module(ThreadSafeModule tsm) {
