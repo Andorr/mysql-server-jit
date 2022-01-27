@@ -818,6 +818,8 @@ bool Query_expression::optimize(THD *thd, TABLE *materialize_destination,
     create_access_paths(thd);
   }
 
+  // COMPILABLE PLACE TO CALL CAN COMPILE?
+
   set_optimized();  // All query blocks optimized, update the state
 
   if (item != nullptr) {
