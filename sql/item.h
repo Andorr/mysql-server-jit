@@ -25,6 +25,7 @@
 
 #include <sys/types.h>
 
+#include <cassert>
 #include <cfloat>
 #include <climits>
 #include <cmath>
@@ -71,6 +72,13 @@
 #include "sql/trigger_def.h"  // enum_trigger_variable_type
 #include "sql_string.h"
 #include "template_utils.h"
+
+#ifndef JIT_DISABLE
+#include "llvm/IR/Value.h"
+#include "sql/jit/codegen/jit_codegen.h"
+#include "sql/jit/jit.h"
+#include "sql/jit/jit_builder_ctx.h"
+#endif
 
 class Item;
 class Item_field;
@@ -870,7 +878,8 @@ class Item : public Parse_tree_node {
     XPATH_NODESET_CMP,
     VIEW_FIXER_ITEM,
     FIELD_BIT_ITEM,
-    VALUES_COLUMN_ITEM
+    VALUES_COLUMN_ITEM,
+    COMPILED_ITEM,
   };
 
   enum cond_result { COND_UNDEF, COND_OK, COND_TRUE, COND_FALSE };
@@ -3448,6 +3457,17 @@ class Item : public Parse_tree_node {
    A helper funciton to ensure proper usage of CAST(.. AS .. ARRAY)
   */
   virtual void allow_array_cast() {}
+
+  /**
+   * JIT implementation
+   */
+
+#ifndef JIT_DISABLE
+  virtual llvm::Value *codegen(
+      [[maybe_unused]] jit::JITBuilderContext *context) {
+    return nullptr;
+  }
+#endif
 };
 
 /**
@@ -4901,11 +4921,20 @@ class Item_int : public Item_num {
   bool check_partition_func_processor(uchar *) override { return false; }
   bool check_function_as_value_generator(uchar *) override { return false; }
 
+
+#ifndef JIT_DISABLE
+  llvm::Value *codegen(
+      [[maybe_unused]] jit::JITBuilderContext *context) override {
+    return jit::codegen_item_int(this, context);
+  }
+#endif
+
   // COMPILABLE CAN COMPILE ITEM_INT OVERRIDE
   bool can_compile() override {
     // Item_int can always be compiled
     return true;
   }
+
 };
 
 /**
