@@ -6,11 +6,14 @@
 
 class Item_int;
 class Item_func_eq;
+class Item_field;
 
 namespace jit {
 llvm::Value *codegen_item_int(Item_int *item, jit::JITBuilderContext *context);
 llvm::Value *codegen_item_func_eq(Item_func_eq *item,
                                   jit::JITBuilderContext *context);
+llvm::Value *codegen_item_field(Item_field *item,
+                                jit::JITBuilderContext *context);
 
 }  // namespace jit
 

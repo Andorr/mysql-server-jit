@@ -4373,6 +4373,18 @@ class Item_field : public Item_ident {
              select list item.
   */
   virtual bool is_asterisk() const { return false; }
+
+  #ifndef JIT_DISABLE
+
+  bool can_compile() override { return true; }
+  bool can_compile_result = true;
+
+  llvm::Value *codegen(
+      [[maybe_unused]] jit::JITBuilderContext *context) override {
+    return jit::codegen_item_field(this, context);
+  }
+
+  #endif
 };
 
 /**
