@@ -29,6 +29,8 @@ class Item_compiled : public Item {
 
   void jit_compile(jit::JITExecutionContext *exec_ctx);
 
+  void print_ir();
+
   longlong val_int() override;
 
   virtual double val_real() override { return 0.0; }

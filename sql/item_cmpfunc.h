@@ -53,6 +53,11 @@
 #include "sql_string.h"
 #include "template_utils.h"  // down_cast
 
+#ifndef JIT_DISABLE
+#include "llvm/IR/Value.h"
+#include "sql/jit/codegen/jit_codegen.h"
+#endif
+
 class Arg_comparator;
 class Field;
 class Item_func_eq;
@@ -1064,6 +1069,13 @@ class Item_func_eq : public Item_func_comparison {
   // This is used only in the hypergraph optimizer; the pre-hypergraph optimizer
   // uses COND_EQUAL to find this instead.
   Item_equal *source_multiple_equality = nullptr;
+
+#ifndef JIT_DISABLE
+  llvm::Value *codegen(
+      [[maybe_unused]] jit::JITBuilderContext *context) override {
+    return jit::codegen_item_func_eq(this, context);
+  }
+#endif
 };
 
 /**

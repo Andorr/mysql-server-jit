@@ -31,7 +31,7 @@ class JITItemCompiledTests : public testing::Test {
  public:
 };
 
-TEST_F(JITItemCompiledTests, CompileItem) {
+TEST_F(JITItemCompiledTests, CompileItemInt) {
   llvm::InitializeNativeTarget();
   llvm::InitializeNativeTargetAsmPrinter();
   llvm::InitializeNativeTargetAsmParser();
@@ -46,4 +46,24 @@ TEST_F(JITItemCompiledTests, CompileItem) {
   item->jit_compile(jit_exec_ctx.get());
   auto result = item->val_int();
   ASSERT_TRUE(result == 7);
+};
+
+TEST_F(JITItemCompiledTests, CompileItemFuncEq) {
+  llvm::InitializeNativeTarget();
+  llvm::InitializeNativeTargetAsmPrinter();
+  llvm::InitializeNativeTargetAsmParser();
+
+  auto jit_exec_ctx = jit::JITExecutionContext::new_exec_context();
+  ASSERT_TRUE(jit_exec_ctx != nullptr);
+
+  Item *a = new Item_int(7);
+  Item *b = new Item_int(8);
+  Item *c = new Item_func_eq(a, b);
+  Item_compiled *item = new Item_compiled(jit_exec_ctx.get(), c);
+
+  item->codegen_item();
+  item->print_ir();
+  item->jit_compile(jit_exec_ctx.get());
+  auto result = item->val_int();
+  ASSERT_TRUE(result == 0);
 };
