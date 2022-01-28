@@ -27,6 +27,7 @@ void Item_compiled::codegen_item() {
   llvm::Function *function =
       llvm::Function::Create(functionType, llvm::Function::ExternalLinkage,
                              "__main", *builder_ctx->func_module);
+  builder_ctx->main_function = function;
 
   // Set entry point
   llvm::BasicBlock *entry =
@@ -62,4 +63,9 @@ longlong Item_compiled::val_int() {
 
   int_func_ptr func = reinterpret_cast<int_func_ptr>(*this->compiled_func);
   return func();
+}
+
+void Item_compiled::print_ir() {
+  builder_ctx->main_function->print(llvm::errs());
+  fprintf(stderr, "\n");
 }
