@@ -1,6 +1,7 @@
 #include <memory>
 
-#include "item_compiled.h"
+#include "jit_common.h"
+#include "sql/jit/item_compiled.h"
 
 #include "llvm/ExecutionEngine/Orc/ThreadSafeModule.h"
 #include "llvm/IR/Argument.h"
@@ -17,8 +18,9 @@
 
 void Item_compiled::codegen_item() {
   // Create function
-  // TODO: Make return type based on the type of Item.
-  auto return_type = llvm::Type::getInt32Ty(*builder_ctx->context);
+
+  // We always return an 64-bit integer
+  auto return_type = llvm::Type::getInt64Ty(*builder_ctx->context);
   llvm::FunctionType *functionType =
       llvm::FunctionType::get(return_type, false);
 
@@ -41,13 +43,18 @@ void Item_compiled::jit_compile(jit::JITExecutionContext *exec_ctx) {
                                          std::move(builder_ctx->context));
 
   // TODO: Replace exit_on_err with better error-handling
-  exit_on_err(exec_ctx->add_module(std::move(TSM)));
+  if (auto err = exec_ctx->add_module(std::move(TSM))) {
+    // debug_print("error: was not able to add module");
+    return;
+  }
 
   // TODO: Replace exit_on_err with better error-handling
-  auto exprSymbol = exit_on_err(exec_ctx->lookup("__main"));
-
-  this->compiled_func =
-      std::make_unique<uint64_t>((uint64_t)exprSymbol.getAddress());
+  if (auto expr_symbol = exec_ctx->lookup("__main")) {
+    this->compiled_func =
+        std::make_unique<uint64_t>((uint64_t)(*expr_symbol).getAddress());
+  } else {
+    // debug_print("error: was not able to lookup __main");
+  }
 }
 
 longlong Item_compiled::val_int() {

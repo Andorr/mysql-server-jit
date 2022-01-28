@@ -15,7 +15,7 @@ using namespace jit;
 std::unique_ptr<JITExecutionContext> JITExecutionContext::new_exec_context() {
   auto epc = SelfExecutorProcessControl::Create();
   if (!epc) {
-    debug_print("error: %s", "SelfExecutorProcessControl");
+    // debug_print("error: %s", "SelfExecutorProcessControl");
     return nullptr;
   }
 
@@ -26,7 +26,7 @@ std::unique_ptr<JITExecutionContext> JITExecutionContext::new_exec_context() {
 
   auto dl = jtmb.getDefaultDataLayoutForTarget();
   if (!dl) {
-    debug_print("error: %s", "SelfExecutorProcessControl");
+    // debug_print("error: %s", "SelfExecutorProcessControl");
     return nullptr;
   }
 
