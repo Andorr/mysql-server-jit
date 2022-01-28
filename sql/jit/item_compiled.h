@@ -23,6 +23,8 @@ class Item_compiled : public Item {
     this->compiled_func = nullptr;
   }
 
+  ~Item_compiled() {}
+
   enum Type type() const override { return COMPILED_ITEM; }
 
   void codegen_item();

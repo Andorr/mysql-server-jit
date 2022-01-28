@@ -76,8 +76,8 @@
 #ifndef JIT_DISABLE
 #include "llvm/IR/Value.h"
 #include "sql/jit/codegen/jit_codegen.h"
-#include "sql/jit/jit.h"
 #include "sql/jit/jit_builder_ctx.h"
+#include "sql/jit/jit_exec_ctx.h"
 #endif
 
 class Item;
@@ -814,9 +814,18 @@ class Item : public Parse_tree_node {
   friend class udf_handler;
   virtual bool is_expensive_processor(uchar *) { return false; }
 
+#ifndef JIT_DISABLE
   // COMPILABLE CAN COMPILE ITEM DEFINITION
  public:
   virtual bool can_compile() { return false; }
+  virtual void compile_children(
+      THD *thd,
+      jit::JITExecutionContext *jit_execution_context) {
+    return;
+  }
+  // Should never be read before can_compile is called
+  bool can_compile_result = false;
+#endif
 
  protected:
   /**
@@ -4926,13 +4935,15 @@ class Item_int : public Item_num {
       [[maybe_unused]] jit::JITBuilderContext *context) override {
     return jit::codegen_item_int(this, context);
   }
-#endif
 
+  // COMPILABLE CAN COMPILE RESULT ITEM_INT OVERRIDE
+  bool can_compile_result = true;
   // COMPILABLE CAN COMPILE ITEM_INT OVERRIDE
   bool can_compile() override {
     // Item_int can always be compiled
     return true;
   }
+#endif
 };
 
 /**

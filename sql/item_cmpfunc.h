@@ -53,6 +53,10 @@
 #include "sql_string.h"
 #include "template_utils.h"  // down_cast
 
+#ifndef JIT_DISABLE
+#include "sql/jit/jit_exec_ctx.h"
+#endif
+
 class Arg_comparator;
 class Field;
 class Item_func_eq;
@@ -982,8 +986,12 @@ class Item_func_eq : public Item_func_comparison {
   Item *equality_substitution_transformer(uchar *arg) override;
   bool gc_subst_analyzer(uchar **) override { return true; }
 
+#ifndef JIT_DISABLE
   // COMPILABLE CAN COMPILE ITEM_FUNC_EQ OVERRIDE
   bool can_compile() override;
+  void compile_children(
+      THD *thd, jit::JITExecutionContext *jit_execution_context) override;
+#endif
 
   float get_filtering_effect(THD *thd, table_map filter_for_table,
                              table_map read_tables,

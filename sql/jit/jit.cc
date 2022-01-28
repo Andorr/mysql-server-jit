@@ -8,11 +8,11 @@
 
 using namespace jit;
 
-std::unique_ptr<JITExecutionContext> jit::new_jit_exec_ctx() {
+std::unique_ptr<JITExecutionContext> new_jit_exec_ctx() {
   return JITExecutionContext::new_exec_context();
 }
-std::optional<int> jit::compile_where_cond(
-    [[maybe_unused]] std::unique_ptr<JITExecutionContext> *jit_exec_ctx,
-    [[maybe_unused]] Item *where_cond) {
-  return std::nullopt;
-};
+Item_compiled *jit::create_item_compiled_from_item(
+    JITExecutionContext *jit_exec_ctx, Item *where_cond) {
+  // TODO: Implement this
+  return nullptr;
+}
