@@ -1,5 +1,5 @@
 #include "sql/item.h"
-#include "sql/jit_codegen.h"
+#include "sql/jit/codegen/jit_codegen.h"
 
 #include "llvm/IR/Constant.h"
 #include "llvm/IR/Value.h"

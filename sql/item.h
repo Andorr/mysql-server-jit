@@ -4921,7 +4921,6 @@ class Item_int : public Item_num {
   bool check_partition_func_processor(uchar *) override { return false; }
   bool check_function_as_value_generator(uchar *) override { return false; }
 
-
 #ifndef JIT_DISABLE
   llvm::Value *codegen(
       [[maybe_unused]] jit::JITBuilderContext *context) override {
@@ -4934,7 +4933,6 @@ class Item_int : public Item_num {
     // Item_int can always be compiled
     return true;
   }
-
 };
 
 /**
