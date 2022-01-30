@@ -28,6 +28,7 @@
 #include <assert.h>
 #include <sys/types.h>
 
+#include <cassert>
 #include <cstring>
 #include <memory>
 
@@ -992,7 +993,7 @@ class Item_func_eq : public Item_func_comparison {
   // COMPILABLE CAN COMPILE ITEM_FUNC_EQ OVERRIDE
   bool can_compile() override;
   void compile_children(
-      THD *thd, jit::JITExecutionContext *jit_execution_context) override;
+      [[maybe_unused]] THD *thd, [[maybe_unused]] jit::JITExecutionContext *jit_execution_context) override;
 #endif
 
   float get_filtering_effect(THD *thd, table_map filter_for_table,

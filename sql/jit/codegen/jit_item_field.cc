@@ -6,7 +6,7 @@
 #include "llvm/IR/Value.h"
 
 namespace jit {
-llvm::Value *codegen_item_field(Item_func_eq *item,
+llvm::Value *codegen_item_field(Item_field *item,
                                 jit::JITBuilderContext *context) {
   return llvm::ConstantInt::get(*context->context,
                                 llvm::APInt(64, (uint64_t)69));
