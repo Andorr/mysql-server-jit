@@ -1,5 +1,6 @@
 #include <cassert>
 #include <iostream>
+#include <memory>
 #include "optional"
 
 #include "jit.h"
@@ -8,7 +9,7 @@
 
 using namespace jit;
 
-std::unique_ptr<JITExecutionContext> new_jit_exec_ctx() {
+std::unique_ptr<JITExecutionContext> jit::new_jit_exec_ctx() {
   return JITExecutionContext::new_exec_context();
 }
 
