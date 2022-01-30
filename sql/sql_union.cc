@@ -824,8 +824,7 @@ bool Query_expression::optimize(THD *thd, TABLE *materialize_destination,
 
 #ifndef JIT_DISABLE
   // COMPILABLE PLACE TO CALL CAN COMPILE?
-
-  jit::JITExecutionContext *jit_ctx = jit::new_jit_exec_ctx().release();
+  auto *jit_ctx = jit::new_jit_exec_ctx().release();
 
   for (Query_block *query_block = first_query_block(); query_block != nullptr;
        query_block = query_block->next_query_block()) {

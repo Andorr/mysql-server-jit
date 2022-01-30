@@ -819,8 +819,8 @@ class Item : public Parse_tree_node {
  public:
   virtual bool can_compile() { return false; }
   virtual void compile_children(
-      THD *thd,
-      jit::JITExecutionContext *jit_execution_context) {
+      [[maybe_unused]] THD *thd,
+      [[maybe_unused]] jit::JITExecutionContext *jit_execution_context) {
     return;
   }
   // Should never be read before can_compile is called
