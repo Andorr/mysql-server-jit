@@ -32,6 +32,8 @@ namespace jit {
 std::unique_ptr<JITExecutionContext> new_jit_exec_ctx();
 Item_compiled *create_item_compiled_from_item(JITExecutionContext *jit_exec_ctx,
                                               Item *item);
+
+extern bool should_compile;
 };  // namespace jit
 
 #endif

@@ -20,3 +20,5 @@ Item_compiled *jit::create_item_compiled_from_item(
   compiled->jit_compile(jit_exec_ctx);
   return compiled;
 }
+
+bool jit::should_compile = false;

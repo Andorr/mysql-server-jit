@@ -824,25 +824,27 @@ bool Query_expression::optimize(THD *thd, TABLE *materialize_destination,
 
 #ifndef JIT_DISABLE
   // COMPILABLE PLACE TO CALL CAN COMPILE?
-  auto *jit_ctx = jit::new_jit_exec_ctx().release();
+  if (jit::should_compile) {
+    auto *jit_ctx = jit::new_jit_exec_ctx().release();
 
-  for (Query_block *query_block = first_query_block(); query_block != nullptr;
-       query_block = query_block->next_query_block()) {
-    thd->lex->set_current_query_block(query_block);
+    for (Query_block *query_block = first_query_block(); query_block != nullptr;
+         query_block = query_block->next_query_block()) {
+      thd->lex->set_current_query_block(query_block);
 
-    // COMPILABLE TRY TO COMPILE WHERE CLAUSE
+      // COMPILABLE TRY TO COMPILE WHERE CLAUSE
 
-    Item *where_cond = query_block->where_cond();
-    query_block->where_cond()->can_compile();
-    if (where_cond->can_compile_result) {
-      // The entire where_cond item can be replaced by a Item_compiled
-      // *replace where_cond with new item_compiled*
-      Item_compiled *where_cond_compiled =
-          jit::create_item_compiled_from_item(jit_ctx, where_cond);
-      query_block->set_where_cond(where_cond_compiled);
-    } else {
-      // Perhaps some children of the where_cond item can be compiled
-      where_cond->compile_children(thd, jit_ctx);
+      Item *where_cond = query_block->where_cond();
+      query_block->where_cond()->can_compile();
+      if (where_cond->can_compile_result) {
+        // The entire where_cond item can be replaced by a Item_compiled
+        // *replace where_cond with new item_compiled*
+        Item_compiled *where_cond_compiled =
+            jit::create_item_compiled_from_item(jit_ctx, where_cond);
+        query_block->set_where_cond(where_cond_compiled);
+      } else {
+        // Perhaps some children of the where_cond item can be compiled
+        where_cond->compile_children(thd, jit_ctx);
+      }
     }
   }
 #endif
