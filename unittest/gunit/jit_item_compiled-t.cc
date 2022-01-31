@@ -14,6 +14,9 @@
 #include "unittest/gunit/fake_table.h"
 #include "unittest/gunit/test_utils.h"
 
+#include "unittest/gunit/fake_table.h"
+#include "unittest/gunit/mock_field_long.h"
+
 #include "llvm/Support/TargetSelect.h"
 
 using my_testing::Server_initializer;
@@ -66,4 +69,30 @@ TEST_F(JITItemCompiledTests, CompileItemFuncEq) {
   item->jit_compile(jit_exec_ctx.get());
   auto result = item->val_int();
   ASSERT_TRUE(result == 0);
+};
+
+TEST_F(JITItemCompiledTests, CompileItemField) {
+  llvm::InitializeNativeTarget();
+  llvm::InitializeNativeTargetAsmPrinter();
+  llvm::InitializeNativeTargetAsmParser();
+
+  auto jit_exec_ctx = jit::JITExecutionContext::new_exec_context();
+  ASSERT_TRUE(jit_exec_ctx != nullptr);
+
+  Item *a = new Item_int(69);
+
+  Mock_field_long field(false);
+  Fake_TABLE table(&field);
+  table.in_use = thd();
+  field.make_readable();
+
+  Item *b = new Item_field(&field);
+  Item *c = new Item_func_eq(a, b);
+  Item_compiled *item = new Item_compiled(jit_exec_ctx.get(), c);
+
+  item->codegen_item();
+  item->print_ir();
+  item->jit_compile(jit_exec_ctx.get());
+  auto result = item->val_int();
+  ASSERT_EQ(result, 1);
 };

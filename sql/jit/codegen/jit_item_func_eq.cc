@@ -22,6 +22,8 @@ llvm::Value *codegen_item_func_eq(Item_func_eq *item,
 
   llvm::Value *cmp =
       context->builder->CreateICmpEQ(item_a_value, item_b_value, "int = int");
-  return cmp;
+  return context->builder->CreateIntCast(
+      cmp, llvm::Type::getInt64Ty(*context->context),
+      false);  // TODO: Verify this bool
 }
 }  // namespace jit
