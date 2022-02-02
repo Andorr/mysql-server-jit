@@ -1,6 +1,7 @@
 #include <memory>
 
 #include "jit_common.h"
+#include "sql/jit/codegen/jit_codegen.h"
 #include "sql/jit/item_compiled.h"
 
 #include "llvm/ExecutionEngine/Orc/ThreadSafeModule.h"
@@ -34,7 +35,7 @@ void Item_compiled::codegen_item() {
       llvm::BasicBlock::Create(*builder_ctx->context, "entry", function);
   builder_ctx->builder->SetInsertPoint(entry);
 
-  llvm::Value *value = this->item->codegen(builder_ctx.get());
+  llvm::Value *value = jit::codegen_item(this->item, builder_ctx.get());
   builder_ctx->builder->CreateRet(value);
 }
 

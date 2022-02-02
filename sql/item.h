@@ -73,13 +73,6 @@
 #include "sql_string.h"
 #include "template_utils.h"
 
-#ifndef JIT_DISABLE
-#include "llvm/IR/Value.h"
-#include "sql/jit/codegen/jit_codegen.h"
-#include "sql/jit/jit_builder_ctx.h"
-#include "sql/jit/jit_exec_ctx.h"
-#endif
-
 class Item;
 class Item_field;
 class Item_singlerow_subselect;
@@ -3460,16 +3453,6 @@ class Item : public Parse_tree_node {
   */
   virtual void allow_array_cast() {}
 
-  /**
-   * JIT implementation
-   */
-
-#ifndef JIT_DISABLE
-  virtual llvm::Value *codegen(
-      [[maybe_unused]] jit::JITBuilderContext *context) {
-    return nullptr;
-  }
-#endif
 };
 
 /**
@@ -4371,11 +4354,6 @@ class Item_field : public Item_ident {
 
   bool can_compile() override { return true; }
   bool can_compile_result = true;
-
-  llvm::Value *codegen(
-      [[maybe_unused]] jit::JITBuilderContext *context) override {
-    return jit::codegen_item_field(this, context);
-  }
 
 #endif
 };

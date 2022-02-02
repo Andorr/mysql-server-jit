@@ -10,12 +10,12 @@ llvm::Value *codegen_item_func_eq(Item_func_eq *item,
                                   jit::JITBuilderContext *context) {
   Item **items = item->arguments();
 
-  llvm::Value *item_a_value = items[0]->codegen(context);
+  llvm::Value *item_a_value = jit::codegen_item(items[0], context);
   if (!item_a_value) {
     return nullptr;
   }
 
-  llvm::Value *item_b_value = items[1]->codegen(context);
+  llvm::Value *item_b_value = jit::codegen_item(items[1], context);
   if (!item_b_value) {
     return nullptr;
   }

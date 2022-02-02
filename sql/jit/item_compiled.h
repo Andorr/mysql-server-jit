@@ -4,7 +4,7 @@
 #include <cassert>
 #include <memory>
 
-#include "jit_exec_ctx.h"
+#include "sql/jit/jit_exec_ctx.h"
 
 #include "../item.h"
 
