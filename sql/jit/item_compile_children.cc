@@ -15,6 +15,7 @@ void compile_children(THD *thd, jit::JITExecutionContext *jit_execution_context,
   if (Item_int *int_item = dynamic_cast<Item_int *>(item)) {
     // Item int doesnt have children and should have been compiled by its parent
     // item
+    (void)int_item;
     return;
   } else if (Item_func_eq *item_func_eq = dynamic_cast<Item_func_eq *>(item)) {
     if (item_func_eq->arguments()[0]->can_compile_result) {
@@ -36,6 +37,7 @@ void compile_children(THD *thd, jit::JITExecutionContext *jit_execution_context,
   } else if (Item_field *item_field = dynamic_cast<Item_field *>(item)) {
     // Item field doesnt have children and should have been compiled by its
     // parent item
+    (void)item_field;
     return;
   }
 }
