@@ -95,9 +95,8 @@
 #include "sql/window.h"  // Window
 #include "template_utils.h"
 
-#ifndef JIT_DISABLE
+#include "sql/jit/item_compile_children.h"
 #include "sql/jit/jit.h"
-#endif
 
 using std::move;
 using std::vector;
@@ -823,6 +822,7 @@ bool Query_expression::optimize(THD *thd, TABLE *materialize_destination,
   }
 
   // COMPILABLE PLACE TO CALL CAN COMPILE?
+
   // TODO(Sveinung): Her må den nye eksterne rekursive metoden kalles
   if (jit::should_compile) {
     auto *jit_ctx = jit::new_jit_exec_ctx().release();
@@ -832,7 +832,6 @@ bool Query_expression::optimize(THD *thd, TABLE *materialize_destination,
       thd->lex->set_current_query_block(query_block);
 
       // COMPILABLE TRY TO COMPILE WHERE CLAUSE
-
       Item *where_cond = query_block->where_cond();
       query_block->where_cond()->can_compile();
       if (where_cond->can_compile_result) {
@@ -843,7 +842,7 @@ bool Query_expression::optimize(THD *thd, TABLE *materialize_destination,
         query_block->set_where_cond(where_cond_compiled);
       } else {
         // Perhaps some children of the where_cond item can be compiled
-        where_cond->compile_children(thd, jit_ctx);
+        compile_children(thd, jit_ctx, where_cond);
       }
     }
   }

@@ -89,10 +89,6 @@
 #include "sql/system_variables.h"
 #include "sql/thd_raii.h"
 
-#ifndef JIT_DISABLE
-#include "sql/jit/jit.h"
-#include "sql/jit/jit_exec_ctx.h"
-#endif
 
 using std::max;
 using std::min;

@@ -73,13 +73,6 @@
 #include "sql_string.h"
 #include "template_utils.h"
 
-#ifndef JIT_DISABLE
-#include "llvm/IR/Value.h"
-#include "sql/jit/codegen/jit_codegen.h"
-#include "sql/jit/jit_builder_ctx.h"
-#include "sql/jit/jit_exec_ctx.h"
-#endif
-
 class Item;
 class Item_field;
 class Item_singlerow_subselect;
@@ -3459,17 +3452,6 @@ class Item : public Parse_tree_node {
    A helper funciton to ensure proper usage of CAST(.. AS .. ARRAY)
   */
   virtual void allow_array_cast() {}
-
-  /**
-   * JIT implementation
-   */
-
-#ifndef JIT_DISABLE
-  virtual llvm::Value *codegen(
-      [[maybe_unused]] jit::JITBuilderContext *context) {
-    return nullptr;
-  }
-#endif
 };
 
 /**
@@ -4367,17 +4349,9 @@ class Item_field : public Item_ident {
   */
   virtual bool is_asterisk() const { return false; }
 
-#ifndef JIT_DISABLE
-
+  // COMPILABLE ITEM_FIELD CAN COMPILE OVERRIDE
   bool can_compile() override { return true; }
   bool can_compile_result = true;
-
-  llvm::Value *codegen(
-      [[maybe_unused]] jit::JITBuilderContext *context) override {
-    return jit::codegen_item_field(this, context);
-  }
-
-#endif
 };
 
 /**
@@ -4934,8 +4908,6 @@ class Item_int : public Item_num {
   bool eq(const Item *, bool) const override;
   bool check_partition_func_processor(uchar *) override { return false; }
   bool check_function_as_value_generator(uchar *) override { return false; }
-
-
 
   // COMPILABLE CAN COMPILE RESULT ITEM_INT OVERRIDE
   bool can_compile_result = true;
