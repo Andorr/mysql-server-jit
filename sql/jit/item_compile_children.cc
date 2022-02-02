@@ -1,48 +1,39 @@
 #include "jit_common.h"
 #include "sql/jit/item_compiled.h"
 
-#include "llvm/ExecutionEngine/Orc/ThreadSafeModule.h"
-#include "llvm/IR/Argument.h"
-#include "llvm/IR/BasicBlock.h"
-#include "llvm/IR/Constants.h"
-#include "llvm/IR/DerivedTypes.h"
-#include "llvm/IR/Function.h"
-#include "llvm/IR/IRBuilder.h"
-#include "llvm/IR/Instructions.h"
-#include "llvm/IR/LLVMContext.h"
-#include "llvm/IR/Module.h"
-#include "llvm/IR/Type.h"
-#include "llvm/IR/Verifier.h"
-
 #include "sql/item.h"
 #include "sql/item_cmpfunc.h"
 #include "sql/jit/jit.h"
 #include "sql/jit/jit_exec_ctx.h"
 
+#include "sql/jit/item_compile_children.h"
+
 // Function to do stuff, aka recursive greier
 
 void compile_children(THD *thd, jit::JITExecutionContext *jit_execution_context,
                       Item *item) {
-  if (Item_int *int_item = dynamic_cast<Item_int>(item)) {
+  if (Item_int *int_item = dynamic_cast<Item_int *>(item)) {
     // Item int doesnt have children and should have been compiled by its parent
     // item
     return;
-  } else if (Item_func_eq *item_func_eq = dynamic_cast<Item_func_eq>(item)) {
-    if (item_func_eq->args[0]->can_compile_result) {
-      Item_compiled *left_child_compiled =
-          jit::create_item_compiled_from_item();
-      int_item->set_arg(thd, 0, left_child_compiled);
+  } else if (Item_func_eq *item_func_eq = dynamic_cast<Item_func_eq *>(item)) {
+    if (item_func_eq->arguments()[0]->can_compile_result) {
+      Item_compiled *left_child_compiled = jit::create_item_compiled_from_item(
+          jit_execution_context, item_func_eq->arguments()[0]);
+      item_func_eq->set_arg(thd, 0, left_child_compiled);
     } else {
-      compile_children(thd, jit_execution_context, item_func_eq->args[0]);
+      compile_children(thd, jit_execution_context,
+                       item_func_eq->arguments()[0]);
     }
-    if (item_func_eq->args[1]->can_compile_result) {
-      Item_compiled *right_child_compiled =
-          jit::create_item_compiled_from_item();
-      int_item->set_arg(thd, 1, right_child_compiled);
+    if (item_func_eq->arguments()[1]->can_compile_result) {
+      Item_compiled *right_child_compiled = jit::create_item_compiled_from_item(
+          jit_execution_context, item_func_eq->arguments()[1]);
+      item_func_eq->set_arg(thd, 1, right_child_compiled);
     } else {
-      compiled_children(thd, jit_execution_context, item_func_eq->args[1]);
+      compile_children(thd, jit_execution_context,
+                       item_func_eq->arguments()[1]);
     }
-  } else if (Item_field *item_field = dynamic_cast<Item_field>(item)) {
+  } else if (Item_field *item_field = dynamic_cast<Item_field *>(item)) {
     // Item field doesnt have children and should have been compiled by its
     // parent item
     return;
