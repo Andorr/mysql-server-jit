@@ -3452,7 +3452,6 @@ class Item : public Parse_tree_node {
    A helper funciton to ensure proper usage of CAST(.. AS .. ARRAY)
   */
   virtual void allow_array_cast() {}
-
 };
 
 /**
@@ -4350,14 +4349,10 @@ class Item_field : public Item_ident {
   */
   virtual bool is_asterisk() const { return false; }
 
-#ifndef JIT_DISABLE
-
+  // COMPILABLE ITEM_FIELD CAN COMPILE OVERRIDE
   bool can_compile() override { return true; }
   bool can_compile_result = true;
-
-#endif
 };
-
 /**
   Represents [schema.][table.]* in a select list
 
@@ -4912,8 +4907,6 @@ class Item_int : public Item_num {
   bool eq(const Item *, bool) const override;
   bool check_partition_func_processor(uchar *) override { return false; }
   bool check_function_as_value_generator(uchar *) override { return false; }
-
-
 
   // COMPILABLE CAN COMPILE RESULT ITEM_INT OVERRIDE
   bool can_compile_result = true;
