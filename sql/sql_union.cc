@@ -822,8 +822,8 @@ bool Query_expression::optimize(THD *thd, TABLE *materialize_destination,
     create_access_paths(thd);
   }
 
-#ifndef JIT_DISABLE
   // COMPILABLE PLACE TO CALL CAN COMPILE?
+  // TODO(Sveinung): Her må den nye eksterne rekursive metoden kalles
   if (jit::should_compile) {
     auto *jit_ctx = jit::new_jit_exec_ctx().release();
 
@@ -847,7 +847,6 @@ bool Query_expression::optimize(THD *thd, TABLE *materialize_destination,
       }
     }
   }
-#endif
 
   set_optimized();  // All query blocks optimized, update the state
 

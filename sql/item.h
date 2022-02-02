@@ -814,18 +814,11 @@ class Item : public Parse_tree_node {
   friend class udf_handler;
   virtual bool is_expensive_processor(uchar *) { return false; }
 
-#ifndef JIT_DISABLE
   // COMPILABLE CAN COMPILE ITEM DEFINITION
  public:
   virtual bool can_compile() { return false; }
-  virtual void compile_children(
-      [[maybe_unused]] THD *thd,
-      [[maybe_unused]] jit::JITExecutionContext *jit_execution_context) {
-    return;
-  }
   // Should never be read before can_compile is called
   bool can_compile_result = false;
-#endif
 
  protected:
   /**
@@ -4374,7 +4367,7 @@ class Item_field : public Item_ident {
   */
   virtual bool is_asterisk() const { return false; }
 
-  #ifndef JIT_DISABLE
+#ifndef JIT_DISABLE
 
   bool can_compile() override { return true; }
   bool can_compile_result = true;
@@ -4384,7 +4377,7 @@ class Item_field : public Item_ident {
     return jit::codegen_item_field(this, context);
   }
 
-  #endif
+#endif
 };
 
 /**
@@ -4942,11 +4935,7 @@ class Item_int : public Item_num {
   bool check_partition_func_processor(uchar *) override { return false; }
   bool check_function_as_value_generator(uchar *) override { return false; }
 
-#ifndef JIT_DISABLE
-  llvm::Value *codegen(
-      [[maybe_unused]] jit::JITBuilderContext *context) override {
-    return jit::codegen_item_int(this, context);
-  }
+
 
   // COMPILABLE CAN COMPILE RESULT ITEM_INT OVERRIDE
   bool can_compile_result = true;
@@ -4955,7 +4944,6 @@ class Item_int : public Item_num {
     // Item_int can always be compiled
     return true;
   }
-#endif
 };
 
 /**

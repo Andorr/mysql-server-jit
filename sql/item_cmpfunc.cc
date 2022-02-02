@@ -2492,7 +2492,6 @@ longlong Item_func_eq::val_int() {
   return value == 0 ? 1 : 0;
 }
 
-#ifndef JIT_DISABLE
 // COMPILABLE CAN COMPILE ITEM_FUNC_EQ OVERRIDE IMPLEMENTATION
 bool Item_func_eq::can_compile() {
   printf("Item_func_eq called, comparing: %s and %s", args[0]->full_name(),
@@ -2501,29 +2500,6 @@ bool Item_func_eq::can_compile() {
   return can_compile_result;
 }
 
-// COMPILABLE COMPILE CHILDREN ITEM_FUNC_EQ OVERRIDE IMPLEMENTATION
-void Item_func_eq::compile_children(
-    THD *thd, jit::JITExecutionContext *jit_execution_context) {
-  // Check if children can be compiled, and if they can replace with
-  // Item_compiled
-  if (args[0]->can_compile_result) {
-    // TODO: Replace with Item_compiled
-    Item_compiled *left_child_compiled =
-        jit::create_item_compiled_from_item(jit_execution_context, args[0]);
-    set_arg(thd, 0, left_child_compiled);
-  } else {
-    args[0]->compile_children(thd, jit_execution_context);
-  }
-  if (args[1]->can_compile_result) {
-    // TODO: Replace with Item_compiled
-    Item_compiled *right_child_compiled =
-        jit::create_item_compiled_from_item(jit_execution_context, args[1]);
-    set_arg(thd, 1, right_child_compiled);
-  } else {
-    args[1]->compile_children(thd, jit_execution_context);
-  }
-}
-#endif
 
 /** Same as Item_func_eq, but NULL = NULL. */
 
