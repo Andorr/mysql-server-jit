@@ -824,7 +824,9 @@ bool Query_expression::optimize(THD *thd, TABLE *materialize_destination,
   // COMPILABLE PLACE TO CALL CAN COMPILE?
 
   // TODO(Sveinung): Her må den nye eksterne rekursive metoden kalles
-  if (jit::should_compile) {
+  if (current_thd->variables.should_jit_compile) {
+    printf("Should compile query");
+
     auto *jit_ctx = jit::new_jit_exec_ctx().release();
 
     for (Query_block *query_block = first_query_block(); query_block != nullptr;

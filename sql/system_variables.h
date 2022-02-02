@@ -218,6 +218,8 @@ struct System_variables {
   ulong max_error_count;
   ulong max_length_for_sort_data;  ///< Unused.
   ulong max_points_in_geometry;
+  // COMPILABLE SHOULD JIT COMPILE TOGGLE FLAG VARIABLE
+  bool should_jit_compile;
   ulong max_sort_length;
   ulong max_insert_delayed_threads;
   ulong min_examined_row_limit;

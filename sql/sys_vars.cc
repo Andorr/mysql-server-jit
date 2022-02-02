@@ -2950,6 +2950,13 @@ static Sys_var_ulong Sys_max_points_in_geometry(
     HINT_UPDATEABLE SESSION_VAR(max_points_in_geometry), CMD_LINE(OPT_ARG),
     VALID_RANGE(3, 1024 * 1024L), DEFAULT(64 * 1024), BLOCK_SIZE(1));
 
+// COMPILABLE SHOULD JIT COMPILE TOGGLE FLAG
+static Sys_var_bool Sys_should_jit_compile(
+  "should_jit_compile", "Enable JIT compiling of queries",
+  HINT_UPDATEABLE SESSION_VAR(should_jit_compile), CMD_LINE(OPT_ARG),
+  DEFAULT(false)
+);
+
 static PolyLock_mutex PLock_prepared_stmt_count(&LOCK_prepared_stmt_count);
 
 static Sys_var_ulong Sys_max_prepared_stmt_count(
