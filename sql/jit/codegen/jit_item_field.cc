@@ -8,6 +8,7 @@
 namespace jit {
 llvm::Value *codegen_item_field(Item_field *item,
                                 jit::JITBuilderContext *context) {
+  // Field offset: item->field->table->s->rowid_field_offset;
   return llvm::ConstantInt::get(*context->context,
                                 llvm::APInt(64, (uint64_t)69));
 }
