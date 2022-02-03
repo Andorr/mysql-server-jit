@@ -793,47 +793,6 @@ bool Query_expression::optimize(THD *thd, TABLE *materialize_destination,
   query_result()->estimated_rowcount = estimated_rowcount;
   query_result()->estimated_cost = estimated_cost;
 
-  // COMPILABLE PLACE TO CALL CAN COMPILE?
-
-  // TODO(Sveinung): Her må den nye eksterne rekursive metoden kalles
-  if (current_thd->variables.should_jit_compile) {
-    printf("Should compile query");
-
-    if (!jit::initialized) {
-      jit::initialize();
-    }
-
-    auto *jit_ctx = jit::new_jit_exec_ctx().release();
-
-    for (Query_block *query_block = first_query_block(); query_block != nullptr;
-         query_block = query_block->next_query_block()) {
-      thd->lex->set_current_query_block(query_block);
-
-      // COMPILABLE TRY TO COMPILE WHERE CLAUSE
-      Item *where_cond = query_block->where_cond();
-      if (where_cond == nullptr) {
-        continue;
-      }
-
-      query_block->where_cond()->can_compile();
-      if (where_cond->can_compile_result) {
-        // The entire where_cond item can be replaced by a Item_compiled
-        // *replace where_cond with new item_compiled*
-        Item_compiled *where_cond_compiled =
-            jit::create_item_compiled_from_item(jit_ctx, where_cond);
-        query_block->set_where_cond(where_cond_compiled);
-
-        // if (m_root_access_path->type == AccessPath::FILTER) {
-        //   m_root_access_path->filter().condition = where_cond_compiled;
-        // }
-
-      } else {
-        // Perhaps some children of the where_cond item can be compiled
-        compile_children(thd, jit_ctx, where_cond);
-      }
-    }
-  }
-
   // If the caller has asked for materialization directly into a table of its
   // own, and we can do so, do an unfinished materialization (see the comment
   // on this function for more details).

@@ -40,6 +40,13 @@
 #include "sql/sql_array.h"
 #include "sql/sql_class.h"
 
+// COMPILABLE INCLUDES
+#include "sql/jit/item_compile_children.h"
+#include "sql/jit/item_compiled.h"
+#include "sql/jit/jit.h"
+#include "sql/jit/jit_common.h"
+#include "sql/jit/jit_exec_ctx.h"
+
 template <class T>
 class Bounds_checked_array;
 class Common_table_expr;
@@ -1309,6 +1316,30 @@ inline AccessPath *NewFilterAccessPath(THD *thd, AccessPath *child,
   AccessPath *path = new (thd->mem_root) AccessPath;
   path->type = AccessPath::FILTER;
   path->filter().child = child;
+
+  // COMPILABLE CAN COMPILE HERE?????
+  // Check if can compile before setting condition
+  if (current_thd->variables.should_jit_compile) {
+    printf("Should compile query");
+
+    if (!jit::initialized) {
+      jit::initialize();
+    }
+
+    auto *jit_ctx = jit::new_jit_exec_ctx().release();
+
+    condition->can_compile();
+    if (condition->can_compile_result) {
+      // The entire where_cond item can be replaced by a Item_compiled
+      // *replace where_cond with new item_compiled*
+      Item_compiled *where_cond_compiled =
+          jit::create_item_compiled_from_item(jit_ctx, condition);
+      condition = where_cond_compiled;
+    } else {
+      compile_children(thd, jit_ctx, condition);
+    }
+  }
+
   path->filter().condition = condition;
   path->filter().materialize_subqueries = false;
   return path;
