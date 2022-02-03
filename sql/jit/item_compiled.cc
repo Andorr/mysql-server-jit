@@ -70,3 +70,8 @@ void Item_compiled::print_ir() {
   builder_ctx->main_function->print(llvm::errs());
   fprintf(stderr, "\n");
 }
+/*
+void print(const THD *thd, String *str,
+             enum_query_type query_type) const override {
+
+             } */
