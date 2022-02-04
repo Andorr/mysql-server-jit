@@ -22,6 +22,10 @@ llvm::Value *jit::codegen_item(Item *item, jit::JITBuilderContext *context) {
     return jit::codegen_item_func_le(it_le, context);
   } else if (Item_cond_or *ir_or = dynamic_cast<Item_cond_or *>(item)) {
     return jit::codegen_item_cond_or(ir_or, context);
+  } else if (Item_func_gt *item_func_gt = dynamic_cast<Item_func_gt *>(item)) {
+    return jit::codegen_item_func_gt(item_func_gt, context);
+  } else if (Item_func_lt *item_func_lt = dynamic_cast<Item_func_lt *>(item)) {
+    return jit::codegen_item_func_lt(item_func_lt, context);
   }
   return nullptr;
 }

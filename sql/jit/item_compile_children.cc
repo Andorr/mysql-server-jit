@@ -17,7 +17,7 @@ void compile_children(THD *thd, jit::JITExecutionContext *jit_execution_context,
     // item
     (void)int_item;
     return;
-  } else if (Item_func_eq *item_func_eq = dynamic_cast<Item_func_eq *>(item)) {
+  } else if (Item_func *item_func_eq = dynamic_cast<Item_func *>(item)) {
     if (item_func_eq->arguments()[0]->can_compile_result) {
       Item_compiled *left_child_compiled = jit::create_item_compiled_from_item(
           jit_execution_context, item_func_eq->arguments()[0]);

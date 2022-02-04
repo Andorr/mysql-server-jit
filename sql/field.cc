@@ -3760,10 +3760,9 @@ double Field_long::val_real() const {
 longlong Field_long::val_int() const {
   ASSERT_COLUMN_MARKED_FOR_READ;
   int32 j;
-  if (table->s->db_low_byte_first) { 
+  if (table->s->db_low_byte_first) {
     j = sint4korr(ptr);
-  }
-  else {
+  } else {
     j = longget(ptr);
   }
   return is_unsigned() ? (longlong)(uint32)j : (longlong)j;
