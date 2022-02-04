@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "sql/sql_lex.h"
+
 #include "sql/jit/item_compiled.h"
 #include "sql/jit/jit_exec_ctx.h"
 
@@ -162,6 +164,90 @@ TEST_F(JITItemCompiledTests, CompileItemFuncGE) {
   Item *g = new Item_int(10);
   Item *h = new Item_int(15);
   Item *i = new Item_func_ge(g, h);
+  item = new Item_compiled(jit_exec_ctx.get(), i);
+
+  item->codegen_item();
+  item->print_ir();
+  item->jit_compile(jit_exec_ctx.get());
+  result = item->val_int();
+  ASSERT_EQ(result, 0);
+};
+
+TEST_F(JITItemCompiledTests, CompileItemFuncLE) {
+  llvm::InitializeNativeTarget();
+  llvm::InitializeNativeTargetAsmPrinter();
+  llvm::InitializeNativeTargetAsmParser();
+
+  auto jit_exec_ctx = jit::JITExecutionContext::new_exec_context();
+  ASSERT_TRUE(jit_exec_ctx != nullptr);
+
+  Item *a = new Item_int(10);
+  Item *b = new Item_int(5);
+
+  Item *c = new Item_func_le(a, b);
+  Item_compiled *item = new Item_compiled(jit_exec_ctx.get(), c);
+
+  item->codegen_item();
+  item->print_ir();
+  item->jit_compile(jit_exec_ctx.get());
+  auto result = item->val_int();
+  ASSERT_EQ(result, 0);
+
+  Item *d = new Item_int(10);
+  Item *e = new Item_int(10);
+  Item *f = new Item_func_le(d, e);
+  item = new Item_compiled(jit_exec_ctx.get(), f);
+
+  item->codegen_item();
+  item->print_ir();
+  item->jit_compile(jit_exec_ctx.get());
+  result = item->val_int();
+  ASSERT_EQ(result, 1);
+
+  Item *g = new Item_int(10);
+  Item *h = new Item_int(15);
+  Item *i = new Item_func_le(g, h);
+  item = new Item_compiled(jit_exec_ctx.get(), i);
+
+  item->codegen_item();
+  item->print_ir();
+  item->jit_compile(jit_exec_ctx.get());
+  result = item->val_int();
+  ASSERT_EQ(result, 1);
+};
+
+TEST_F(JITItemCompiledTests, CompileItemFuncBetween) {
+  llvm::InitializeNativeTarget();
+  llvm::InitializeNativeTargetAsmPrinter();
+  llvm::InitializeNativeTargetAsmParser();
+
+  auto jit_exec_ctx = jit::JITExecutionContext::new_exec_context();
+  ASSERT_TRUE(jit_exec_ctx != nullptr);
+
+  Item *i_10 = new Item_int(10);
+  Item *i_5 = new Item_int(5);
+  Item *i_7 = new Item_int(7);
+  Item *i_11 = new Item_int(11);
+
+  Item *between_a = new Item_func_between(POS(), i_7, i_5, i_10, false);
+  Item_compiled *item = new Item_compiled(jit_exec_ctx.get(), between_a);
+
+  item->codegen_item();
+  item->print_ir();
+  item->jit_compile(jit_exec_ctx.get());
+  auto result = item->val_int();
+  ASSERT_EQ(result, 1);
+
+  Item *between_b = new Item_func_between(POS(), i_5, i_5, i_10, false);
+  item = new Item_compiled(jit_exec_ctx.get(), between_b);
+
+  item->codegen_item();
+  item->print_ir();
+  item->jit_compile(jit_exec_ctx.get());
+  result = item->val_int();
+  ASSERT_EQ(result, 1);
+
+  Item *i = new Item_func_between(POS(), i_11, i_5, i_10, false);
   item = new Item_compiled(jit_exec_ctx.get(), i);
 
   item->codegen_item();
