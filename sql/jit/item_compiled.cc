@@ -54,7 +54,7 @@ void Item_compiled::jit_compile(jit::JITExecutionContext *exec_ctx) {
   }
 
   // TODO: Replace exit_on_err with better error-handling
-  if (auto expr_symbol = exec_ctx->lookup("__main")) {
+  if (auto expr_symbol = exec_ctx->lookup(this->name.c_str())) {
     this->compiled_func =
         std::make_unique<uint64_t>((uint64_t)(*expr_symbol).getAddress());
   } else {

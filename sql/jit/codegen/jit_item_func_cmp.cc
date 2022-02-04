@@ -31,8 +31,16 @@ llvm::Value *codegen_item_func_eq(Item_func_eq *item,
     CMPFUNC(context->builder->CreateICmpEQ)}
 
 llvm::Value *codegen_item_func_lt(Item_func_lt *item,
+                                  jit::JITBuilderContext *context){
+    CMPFUNC(context->builder->CreateICmpSLT)}
+
+llvm::Value *codegen_item_func_ge(Item_func_ge *item,
+                                  jit::JITBuilderContext *context){
+    CMPFUNC(context->builder->CreateICmpSGE)}
+
+llvm::Value *codegen_item_func_le(Item_func_le *item,
                                   jit::JITBuilderContext *context) {
-  CMPFUNC(context->builder->CreateICmpSLT)
+  CMPFUNC(context->builder->CreateICmpSLE)
 }
 
 }  // namespace jit
