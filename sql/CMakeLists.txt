@@ -463,6 +463,10 @@ SET(SQL_SHARED_SOURCES
   jit/codegen/jit_item_int.cc
   jit/codegen/jit_item_func_eq.cc
   jit/codegen/jit_item_field.cc
+  jit/codegen/jit_item_cond_or.cc
+  jit/codegen/jit_item_func_ge.cc
+  jit/codegen/jit_item_func_le.cc
+  jit/codegen/jit_item_func_between.cc
   jit/item_compile_children.cc
   jit/item_compiled.cc
   join_optimizer/access_path.cc

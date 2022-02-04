@@ -127,3 +127,46 @@ TEST_F(JITItemCompiledTests, CompileItemField) {
   auto result = item->val_int();
   ASSERT_EQ(result, 1);
 };
+
+TEST_F(JITItemCompiledTests, CompileItemFuncGE) {
+  llvm::InitializeNativeTarget();
+  llvm::InitializeNativeTargetAsmPrinter();
+  llvm::InitializeNativeTargetAsmParser();
+
+  auto jit_exec_ctx = jit::JITExecutionContext::new_exec_context();
+  ASSERT_TRUE(jit_exec_ctx != nullptr);
+
+  Item *a = new Item_int(10);
+  Item *b = new Item_int(5);
+
+  Item *c = new Item_func_ge(a, b);
+  Item_compiled *item = new Item_compiled(jit_exec_ctx.get(), c);
+
+  item->codegen_item();
+  item->print_ir();
+  item->jit_compile(jit_exec_ctx.get());
+  auto result = item->val_int();
+  ASSERT_EQ(result, 1);
+
+  Item *d = new Item_int(10);
+  Item *e = new Item_int(10);
+  Item *f = new Item_func_ge(d, e);
+  item = new Item_compiled(jit_exec_ctx.get(), f);
+
+  item->codegen_item();
+  item->print_ir();
+  item->jit_compile(jit_exec_ctx.get());
+  result = item->val_int();
+  ASSERT_EQ(result, 1);
+
+  Item *g = new Item_int(10);
+  Item *h = new Item_int(15);
+  Item *i = new Item_func_ge(g, h);
+  item = new Item_compiled(jit_exec_ctx.get(), i);
+
+  item->codegen_item();
+  item->print_ir();
+  item->jit_compile(jit_exec_ctx.get());
+  result = item->val_int();
+  ASSERT_EQ(result, 0);
+};

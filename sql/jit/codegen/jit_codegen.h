@@ -8,6 +8,10 @@ class Item;
 class Item_int;
 class Item_func_eq;
 class Item_field;
+class Item_cond_or;
+class Item_func_between;
+class Item_func_ge;
+class Item_func_le;
 
 namespace jit {
 
@@ -18,6 +22,18 @@ llvm::Value *codegen_item_func_eq(Item_func_eq *item,
                                   jit::JITBuilderContext *context);
 llvm::Value *codegen_item_field(Item_field *item,
                                 jit::JITBuilderContext *context);
+
+llvm::Value *codegen_item_cond_or(Item_cond_or *item,
+                                  jit::JITBuilderContext *context);
+
+llvm::Value *codegen_item_func_between(Item_func_between *item,
+                                       jit::JITBuilderContext *context);
+
+llvm::Value *codegen_item_func_le(Item_func_le *item,
+                                  jit::JITBuilderContext *context);
+
+llvm::Value *codegen_item_func_ge(Item_func_ge *item,
+                                  jit::JITBuilderContext *context);
 
 }  // namespace jit
 

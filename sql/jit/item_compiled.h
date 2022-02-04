@@ -9,10 +9,13 @@
 #include "../item.h"
 
 typedef longlong (*int_func_ptr)();
+std::string gen_random(const int len);
 
 class Item_compiled : public Item {
   std::unique_ptr<jit::JITBuilderContext> builder_ctx;
   Item *item;
+
+  std::string name;
 
   std::unique_ptr<uint64_t> compiled_func;
 
@@ -21,6 +24,7 @@ class Item_compiled : public Item {
     this->builder_ctx = exec_ctx->new_builder_context();
     this->item = item;
     this->compiled_func = nullptr;
+    this->name = gen_random(12);
   }
 
   ~Item_compiled() {}
@@ -32,7 +36,6 @@ class Item_compiled : public Item {
   void jit_compile(jit::JITExecutionContext *exec_ctx);
 
   void print_ir();
-
 
   longlong val_int() override;
 

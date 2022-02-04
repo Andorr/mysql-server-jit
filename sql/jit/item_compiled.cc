@@ -1,3 +1,6 @@
+#include <unistd.h>
+#include <ctime>
+#include <iostream>
 #include <memory>
 
 #include "jit_common.h"
@@ -27,7 +30,7 @@ void Item_compiled::codegen_item() {
 
   llvm::Function *function =
       llvm::Function::Create(functionType, llvm::Function::ExternalLinkage,
-                             "__main", *builder_ctx->func_module);
+                             this->name.c_str(), *builder_ctx->func_module);
   builder_ctx->main_function = function;
 
   // Set entry point
@@ -75,3 +78,18 @@ void print(const THD *thd, String *str,
              enum_query_type query_type) const override {
 
              } */
+
+std::string gen_random(const int len) {
+  static const char alphanum[] =
+      "0123456789"
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      "abcdefghijklmnopqrstuvwxyz";
+  std::string tmp_s;
+  tmp_s.reserve(len);
+
+  for (int i = 0; i < len; ++i) {
+    tmp_s += alphanum[rand() % (sizeof(alphanum) - 1)];
+  }
+
+  return tmp_s;
+}

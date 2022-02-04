@@ -1117,6 +1117,12 @@ class Item_func_ge final : public Item_func_comparison {
                              table_map read_tables,
                              const MY_BITMAP *fields_to_ignore,
                              double rows_in_table) override;
+
+  // COMPILABLE
+  bool can_compile() override {
+    return true;
+  }
+  bool can_compile_result = true;
 };
 
 /**
@@ -1157,6 +1163,12 @@ class Item_func_le final : public Item_func_comparison {
                              table_map read_tables,
                              const MY_BITMAP *fields_to_ignore,
                              double rows_in_table) override;
+
+  // COMPILABLE
+  bool can_compile() override {
+    return true;
+  }
+  bool can_compile_result = true;                          
 };
 
 /**
@@ -1306,6 +1318,13 @@ class Item_func_between final : public Item_func_opt_neg {
         args[0]->not_null_tables() |
         (args[1]->not_null_tables() & args[2]->not_null_tables());
   }
+
+
+  // COMPILABLE
+  bool can_compile() override {
+    return true;
+  }
+  bool can_compile_result = true; 
 };
 
 class Item_func_strcmp final : public Item_bool_func2 {
@@ -2679,6 +2698,12 @@ class Item_cond_or final : public Item_cond {
                              table_map read_tables,
                              const MY_BITMAP *fields_to_ignore,
                              double rows_in_table) override;
+
+  // COMPILABLE
+  bool can_compile() override {
+    return true;
+  }
+  bool can_compile_result = true;
 };
 
 /// Builds condition: (a AND b) IS TRUE
