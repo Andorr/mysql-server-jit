@@ -13,6 +13,8 @@ llvm::Value *jit::codegen_item(Item *item, jit::JITBuilderContext *context) {
     return jit::codegen_item_func_eq(it_func_eq, context);
   } else if (Item_field *it_field = dynamic_cast<Item_field *>(item)) {
     return jit::codegen_item_field(it_field, context);
+  } else if (Item_func_gt *item_func_gt = dynamic_cast<Item_func_gt *>(item)) {
+    return jit::codegen_item_func_gt(item_func_gt, context);
   }
   return nullptr;
 }
