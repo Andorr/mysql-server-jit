@@ -89,7 +89,6 @@
 #include "sql/system_variables.h"
 #include "sql/thd_raii.h"
 
-
 using std::max;
 using std::min;
 
@@ -2496,6 +2495,10 @@ bool Item_func_eq::can_compile() {
   return can_compile_result;
 }
 
+bool Item_func_like::can_compile() {
+  can_compile_result = args[0]->can_compile() && args[1]->can_compile();
+  return can_compile_result;
+}
 
 /** Same as Item_func_eq, but NULL = NULL. */
 

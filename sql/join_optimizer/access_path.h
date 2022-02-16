@@ -1320,7 +1320,7 @@ inline AccessPath *NewFilterAccessPath(THD *thd, AccessPath *child,
   // COMPILABLE CAN COMPILE HERE?????
   // Check if can compile before setting condition
   if (current_thd->variables.should_jit_compile) {
-    printf("Should compile query");
+    fprintf(stderr, "Should compile query");
 
     if (!jit::initialized) {
       jit::initialize();

@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "m_ctype.h"
 #include "sql/sql_lex.h"
 
 #include "sql/jit/item_compiled.h"
@@ -256,3 +257,87 @@ TEST_F(JITItemCompiledTests, CompileItemFuncBetween) {
   result = item->val_int();
   ASSERT_EQ(result, 0);
 };
+
+TEST_F(JITItemCompiledTests, CompileItemString) {
+  llvm::InitializeNativeTarget();
+  llvm::InitializeNativeTargetAsmPrinter();
+  llvm::InitializeNativeTargetAsmParser();
+
+  auto jit_exec_ctx = jit::JITExecutionContext::new_exec_context();
+  ASSERT_TRUE(jit_exec_ctx != nullptr);
+
+  const char *str_a = "Hello";
+  const char *str_b = "Hello";
+  const char *str_c = "World :D";
+
+  Item *item_str_a = new Item_string(str_a, 5, &my_charset_utf8mb4_general_ci);
+  Item *item_str_b = new Item_string(str_b, 5, &my_charset_utf8mb4_general_ci);
+  Item *item_str_c = new Item_string(str_c, 5, &my_charset_utf8mb4_general_ci);
+  Item *item_eq_a = new Item_func_eq(item_str_a, item_str_b);
+  item_eq_a->fix_fields(thd(), &item_eq_a);
+  Item_compiled *item = new Item_compiled(jit_exec_ctx.get(), item_eq_a);
+
+  item->codegen_item();
+  item->print_ir();
+  item->jit_compile(jit_exec_ctx.get());
+  auto result = item->val_int();
+  ASSERT_EQ(result, 1);
+
+  Item *item_eq_b = new Item_func_eq(item_str_a, item_str_c);
+  item_eq_b->fix_fields(thd(), &item_eq_b);
+  item = new Item_compiled(jit_exec_ctx.get(), item_eq_b);
+
+  item->codegen_item();
+  item->print_ir();
+  item->jit_compile(jit_exec_ctx.get());
+  result = item->val_int();
+  ASSERT_EQ(result, 0);
+}
+
+TEST_F(JITItemCompiledTests, CompileItemFuncLike) {
+  llvm::InitializeNativeTarget();
+  llvm::InitializeNativeTargetAsmPrinter();
+  llvm::InitializeNativeTargetAsmParser();
+
+  auto jit_exec_ctx = jit::JITExecutionContext::new_exec_context();
+  ASSERT_TRUE(jit_exec_ctx != nullptr);
+
+  const char *str_a = "Hello";
+  const char *str_b = "%Hello%";
+  const char *str_c = "YHello world! :D";
+  const char *str_d = "Yello world! :D";
+
+  Item *item_str_a = new Item_string(str_a, 5, &my_charset_utf8mb4_general_ci);
+  Item *item_str_b = new Item_string(str_b, 7, &my_charset_utf8mb4_general_ci);
+  Item *item_str_c = new Item_string(str_c, 16, &my_charset_utf8mb4_general_ci);
+  Item *item_str_d = new Item_string(str_d, 15, &my_charset_utf8mb4_general_ci);
+  Item *item_like_a = new Item_func_like(item_str_c, item_str_b);
+  item_like_a->fix_fields(thd(), &item_like_a);
+  Item_compiled *item = new Item_compiled(jit_exec_ctx.get(), item_like_a);
+
+  item->codegen_item();
+  item->print_ir();
+  item->jit_compile(jit_exec_ctx.get());
+  auto result = item->val_int();
+  ASSERT_EQ(result, 1);
+
+  Item *item_like_b = new Item_func_like(item_str_a, item_str_b);
+  item_like_b->fix_fields(thd(), &item_like_b);
+  item = new Item_compiled(jit_exec_ctx.get(), item_like_b);
+
+  item->codegen_item();
+  item->print_ir();
+  item->jit_compile(jit_exec_ctx.get());
+  result = item->val_int();
+  ASSERT_EQ(result, 1);
+
+  Item *item_like_c = new Item_func_like(item_str_d, item_str_b);
+  item_like_c->fix_fields(thd(), &item_like_c);
+  item = new Item_compiled(jit_exec_ctx.get(), item_like_c);
+
+  item->codegen_item();
+  item->print_ir();
+  item->jit_compile(jit_exec_ctx.get());
+  result = item->val_int();
+  ASSERT_EQ(result, 0);
+}

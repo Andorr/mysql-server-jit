@@ -670,7 +670,7 @@ class Item_bool_func2 : public Item_bool_func {
     Item_bool_func::cleanup();
     cmp.cleanup();
   }
-  const Arg_comparator *get_comparator() const { return &cmp; }
+  Arg_comparator *get_comparator() { return &cmp; }
   Item *replace_scalar_subquery(uchar *) override;
   friend class Arg_comparator;
 };
@@ -1119,9 +1119,7 @@ class Item_func_ge final : public Item_func_comparison {
                              double rows_in_table) override;
 
   // COMPILABLE
-  bool can_compile() override {
-    return true;
-  }
+  bool can_compile() override { return true; }
   bool can_compile_result = true;
 };
 
@@ -1165,10 +1163,8 @@ class Item_func_le final : public Item_func_comparison {
                              double rows_in_table) override;
 
   // COMPILABLE
-  bool can_compile() override {
-    return true;
-  }
-  bool can_compile_result = true;                          
+  bool can_compile() override { return true; }
+  bool can_compile_result = true;
 };
 
 /**
@@ -1319,12 +1315,9 @@ class Item_func_between final : public Item_func_opt_neg {
         (args[1]->not_null_tables() & args[2]->not_null_tables());
   }
 
-
   // COMPILABLE
-  bool can_compile() override {
-    return true;
-  }
-  bool can_compile_result = true; 
+  bool can_compile() override { return true; }
+  bool can_compile_result = true;
 };
 
 class Item_func_strcmp final : public Item_bool_func2 {
@@ -2343,6 +2336,9 @@ class Item_func_like final : public Item_bool_func2 {
                              const MY_BITMAP *fields_to_ignore,
                              double rows_in_table) override;
 
+  // COMPILABLE CAN COMPILE ITEM_FUNC_EQ OVERRIDE
+  bool can_compile() override;
+
  private:
   /**
     The method updates covering keys depending on the
@@ -2700,9 +2696,7 @@ class Item_cond_or final : public Item_cond {
                              double rows_in_table) override;
 
   // COMPILABLE
-  bool can_compile() override {
-    return true;
-  }
+  bool can_compile() override { return true; }
   bool can_compile_result = true;
 };
 

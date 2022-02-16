@@ -25,12 +25,12 @@
 
 #include "llvm/Support/TargetSelect.h"
 
-class JITItemCompiledTests : public testing::Test {
+class JITExecContextTests : public testing::Test {
  protected:
  public:
 };
 
-TEST_F(JITItemCompiledTests, SimpleCompile) {
+TEST_F(JITExecContextTests, SimpleCompile) {
   llvm::InitializeNativeTarget();
   llvm::InitializeNativeTargetAsmPrinter();
   llvm::InitializeNativeTargetAsmParser();
