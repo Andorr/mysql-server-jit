@@ -11,8 +11,12 @@
   Item *a = arguments[0];                                                  \
   Item *b = arguments[1];                                                  \
                                                                            \
-  if (a->result_type() == Item_result::STRING_RESULT &&                    \
-      b->result_type() == Item_result::STRING_RESULT) {                    \
+  if ((a->type() == Item::Type::FIELD_ITEM &&                              \
+       b->type() == Item::Type::STRING_ITEM) ||                            \
+      (a->type() == Item::Type::STRING_ITEM &&                             \
+       b->type() == Item::Type::FIELD_ITEM) ||                             \
+      (a->type() == Item::Type::STRING_ITEM &&                             \
+       b->type() == Item::Type::STRING_ITEM)) {                            \
     llvm::FunctionType *function_type =                                    \
         llvm::FunctionType::get(context->builder->getInt64Ty(), false);    \
                                                                            \
@@ -29,7 +33,6 @@
     return context->builder->CreateIntCast(                                \
         call_inst, llvm::Type::getInt64Ty(*context->context), false);      \
   }                                                                        \
-                                                                           \
   llvm::Value *item_a_value = jit::codegen_item(arguments[0], context);    \
   if (!item_a_value) {                                                     \
     return nullptr;                                                        \

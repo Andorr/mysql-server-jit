@@ -6,6 +6,7 @@
 #include "jit_common.h"
 #include "sql/jit/codegen/jit_codegen.h"
 #include "sql/jit/item_compiled.h"
+#include "string"
 
 #include "llvm/ExecutionEngine/Orc/ThreadSafeModule.h"
 #include "llvm/IR/Argument.h"
@@ -73,11 +74,12 @@ void Item_compiled::print_ir() {
   builder_ctx->main_function->print(llvm::errs());
   fprintf(stderr, "\n");
 }
-/*
-void print(const THD *thd, String *str,
-             enum_query_type query_type) const override {
 
-             } */
+void Item_compiled::print(const THD *thd, String *str,
+                          enum_query_type query_type) const {
+  str->reserve(sizeof("Item_compiled") - 1);
+  str->append(STRING_WITH_LEN("Item_compiled"));
+}
 
 std::string gen_random(const int len) {
   static const char alphanum[] =

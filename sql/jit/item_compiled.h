@@ -52,6 +52,9 @@ class Item_compiled : public Item {
   virtual bool get_time([[maybe_unused]] MYSQL_TIME *ltime) override {
     return false;
   }
+
+  void print(const THD *thd, String *str,
+             enum_query_type query_type) const override;
 };
 
 #endif
