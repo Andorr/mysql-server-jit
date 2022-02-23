@@ -1141,6 +1141,10 @@ class Item_func_gt final : public Item_func_comparison {
                              table_map read_tables,
                              const MY_BITMAP *fields_to_ignore,
                              double rows_in_table) override;
+
+  // COMPILABLE
+  bool can_compile() override { return true; }
+  bool can_compile_result = true;
 };
 
 /**
@@ -1206,6 +1210,10 @@ class Item_func_lt final : public Item_func_comparison {
                              table_map read_tables,
                              const MY_BITMAP *fields_to_ignore,
                              double rows_in_table) override;
+
+  // COMPILABLE
+  bool can_compile() override { return true; }
+  bool can_compile_result = true;
 };
 
 /**
@@ -2667,6 +2675,10 @@ class Item_cond_and final : public Item_cond {
                              double rows_in_table) override;
 
   bool contains_only_equi_join_condition() const override;
+
+  // COMPILABLE
+  bool can_compile() override { return true; }
+  bool can_compile_result = true;
 };
 
 class Item_cond_or final : public Item_cond {

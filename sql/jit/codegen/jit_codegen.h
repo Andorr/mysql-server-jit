@@ -6,6 +6,7 @@
 
 class Item;
 class Item_int;
+class Item_cache_int;
 class Item_func_eq;
 class Item_func_gt;
 class Item_func_lt;
@@ -21,6 +22,8 @@ namespace jit {
 llvm::Value *codegen_item(Item *item, jit::JITBuilderContext *context);
 
 llvm::Value *codegen_item_int(Item_int *item, jit::JITBuilderContext *context);
+llvm::Value *codegen_item_cache_int(Item_cache_int *item,
+                                    jit::JITBuilderContext *context);
 llvm::Value *codegen_item_func_eq(Item_func_eq *item,
                                   jit::JITBuilderContext *context);
 llvm::Value *codegen_item_field(Item_field *item,

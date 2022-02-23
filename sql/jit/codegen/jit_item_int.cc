@@ -10,4 +10,10 @@ llvm::Value *codegen_item_int(Item_int *item, jit::JITBuilderContext *context) {
                                 llvm::APInt(64, (uint64_t)item->value));
 }
 
+llvm::Value *codegen_item_cache_int(Item_cache_int *item,
+                                    jit::JITBuilderContext *context) {
+  return llvm::ConstantInt::get(*context->context,
+                                llvm::APInt(64, (uint64_t)item->value));
+}
+
 }  // namespace jit

@@ -5339,7 +5339,7 @@ class Item_string : public Item_basic_constant {
 
   void mark_result_as_const() { str_value.mark_as_const(); }
 
-   // COMPILABLE ITEM_FIELD CAN COMPILE OVERRIDE
+  // COMPILABLE ITEM_FIELD CAN COMPILE OVERRIDE
   bool can_compile() override { return true; }
   bool can_compile_result = true;
 
@@ -6652,10 +6652,8 @@ class Item_cache : public Item_basic_constant {
 };
 
 class Item_cache_int : public Item_cache {
- protected:
-  longlong value;
-
  public:
+  longlong value;
   Item_cache_int() : Item_cache(MYSQL_TYPE_LONGLONG), value(0) {}
   Item_cache_int(enum_field_types field_type_arg)
       : Item_cache(field_type_arg), value(0) {}
@@ -6677,6 +6675,10 @@ class Item_cache_int : public Item_cache {
   bool get_time(MYSQL_TIME *ltime) override { return get_time_from_int(ltime); }
   Item_result result_type() const override { return INT_RESULT; }
   bool cache_value() override;
+
+  // COMPILABLE
+  bool can_compile() override { return true; }
+  bool can_compile_result = true;
 };
 
 /**
