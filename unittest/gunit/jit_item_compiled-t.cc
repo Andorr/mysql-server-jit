@@ -12,6 +12,7 @@
 #include "sql/sql_lex.h"
 
 #include "sql/jit/item_compiled.h"
+#include "sql/jit/jit.h"
 #include "sql/jit/jit_exec_ctx.h"
 
 #include "unittest/gunit/fake_table.h"
@@ -28,7 +29,10 @@ class JITItemCompiledTests : public testing::Test {
  protected:
   Server_initializer initializer;
 
-  void SetUp() override { initializer.SetUp(); }
+  void SetUp() override {
+    initializer.SetUp();
+    jit::initialize();
+  }
 
   void TearDown() override { initializer.TearDown(); }
 
@@ -38,10 +42,6 @@ class JITItemCompiledTests : public testing::Test {
 };
 
 TEST_F(JITItemCompiledTests, CompileItemInt) {
-  llvm::InitializeNativeTarget();
-  llvm::InitializeNativeTargetAsmPrinter();
-  llvm::InitializeNativeTargetAsmParser();
-
   auto jit_exec_ctx = jit::JITExecutionContext::new_exec_context();
   ASSERT_TRUE(jit_exec_ctx != nullptr);
 
@@ -55,10 +55,6 @@ TEST_F(JITItemCompiledTests, CompileItemInt) {
 };
 
 TEST_F(JITItemCompiledTests, CompileItemFuncEq) {
-  llvm::InitializeNativeTarget();
-  llvm::InitializeNativeTargetAsmPrinter();
-  llvm::InitializeNativeTargetAsmParser();
-
   auto jit_exec_ctx = jit::JITExecutionContext::new_exec_context();
   ASSERT_TRUE(jit_exec_ctx != nullptr);
 
@@ -74,10 +70,6 @@ TEST_F(JITItemCompiledTests, CompileItemFuncEq) {
 };
 
 TEST_F(JITItemCompiledTests, CompileItemFieldOnly) {
-  llvm::InitializeNativeTarget();
-  llvm::InitializeNativeTargetAsmPrinter();
-  llvm::InitializeNativeTargetAsmParser();
-
   auto jit_exec_ctx = jit::JITExecutionContext::new_exec_context();
   ASSERT_TRUE(jit_exec_ctx != nullptr);
 
@@ -104,10 +96,6 @@ TEST_F(JITItemCompiledTests, CompileItemFieldOnly) {
 };
 
 TEST_F(JITItemCompiledTests, CompileItemField) {
-  llvm::InitializeNativeTarget();
-  llvm::InitializeNativeTargetAsmPrinter();
-  llvm::InitializeNativeTargetAsmParser();
-
   auto jit_exec_ctx = jit::JITExecutionContext::new_exec_context();
   ASSERT_TRUE(jit_exec_ctx != nullptr);
 
@@ -129,10 +117,6 @@ TEST_F(JITItemCompiledTests, CompileItemField) {
 };
 
 TEST_F(JITItemCompiledTests, CompileItemFuncGE) {
-  llvm::InitializeNativeTarget();
-  llvm::InitializeNativeTargetAsmPrinter();
-  llvm::InitializeNativeTargetAsmParser();
-
   auto jit_exec_ctx = jit::JITExecutionContext::new_exec_context();
   ASSERT_TRUE(jit_exec_ctx != nullptr);
 
@@ -169,10 +153,6 @@ TEST_F(JITItemCompiledTests, CompileItemFuncGE) {
 };
 
 TEST_F(JITItemCompiledTests, CompileItemFuncLE) {
-  llvm::InitializeNativeTarget();
-  llvm::InitializeNativeTargetAsmPrinter();
-  llvm::InitializeNativeTargetAsmParser();
-
   auto jit_exec_ctx = jit::JITExecutionContext::new_exec_context();
   ASSERT_TRUE(jit_exec_ctx != nullptr);
 
@@ -209,10 +189,6 @@ TEST_F(JITItemCompiledTests, CompileItemFuncLE) {
 };
 
 TEST_F(JITItemCompiledTests, CompileItemFuncBetween) {
-  llvm::InitializeNativeTarget();
-  llvm::InitializeNativeTargetAsmPrinter();
-  llvm::InitializeNativeTargetAsmParser();
-
   auto jit_exec_ctx = jit::JITExecutionContext::new_exec_context();
   ASSERT_TRUE(jit_exec_ctx != nullptr);
 
@@ -247,10 +223,6 @@ TEST_F(JITItemCompiledTests, CompileItemFuncBetween) {
 };
 
 TEST_F(JITItemCompiledTests, CompileItemString) {
-  llvm::InitializeNativeTarget();
-  llvm::InitializeNativeTargetAsmPrinter();
-  llvm::InitializeNativeTargetAsmParser();
-
   auto jit_exec_ctx = jit::JITExecutionContext::new_exec_context();
   ASSERT_TRUE(jit_exec_ctx != nullptr);
 
@@ -281,10 +253,6 @@ TEST_F(JITItemCompiledTests, CompileItemString) {
 }
 
 TEST_F(JITItemCompiledTests, CompileItemFuncLike) {
-  llvm::InitializeNativeTarget();
-  llvm::InitializeNativeTargetAsmPrinter();
-  llvm::InitializeNativeTargetAsmParser();
-
   auto jit_exec_ctx = jit::JITExecutionContext::new_exec_context();
   ASSERT_TRUE(jit_exec_ctx != nullptr);
 
