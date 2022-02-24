@@ -12,6 +12,7 @@ class Item_func_gt;
 class Item_func_lt;
 class Item_field;
 class Item_cond_or;
+class Item_cond_and;
 class Item_func_between;
 class Item_func_ge;
 class Item_func_le;
@@ -31,6 +32,9 @@ llvm::Value *codegen_item_field(Item_field *item,
 
 llvm::Value *codegen_item_cond_or(Item_cond_or *item,
                                   jit::JITBuilderContext *context);
+
+llvm::Value *codegen_item_cond_and(Item_cond_and *item,
+                                   jit::JITBuilderContext *context);
 
 llvm::Value *codegen_item_func_between(Item_func_between *item,
                                        jit::JITBuilderContext *context);

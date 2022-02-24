@@ -5339,7 +5339,7 @@ class Item_string : public Item_basic_constant {
 
   void mark_result_as_const() { str_value.mark_as_const(); }
 
-  // COMPILABLE ITEM_FIELD CAN COMPILE OVERRIDE
+  // COMPILABLE ITEM_STRING CAN COMPILE OVERRIDE
   bool can_compile() override { return true; }
   bool can_compile_result = true;
 

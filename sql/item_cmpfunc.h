@@ -1118,9 +1118,8 @@ class Item_func_ge final : public Item_func_comparison {
                              const MY_BITMAP *fields_to_ignore,
                              double rows_in_table) override;
 
-  // COMPILABLE
-  bool can_compile() override { return true; }
-  bool can_compile_result = true;
+  // COMPILABLE CAN COMPILE ITEM_FUNC_GE OVERRIDE
+  bool can_compile() override;
 };
 
 /**
@@ -1142,9 +1141,8 @@ class Item_func_gt final : public Item_func_comparison {
                              const MY_BITMAP *fields_to_ignore,
                              double rows_in_table) override;
 
-  // COMPILABLE
-  bool can_compile() override { return true; }
-  bool can_compile_result = true;
+  // COMPILABLE CAN COMPILE ITEM_FUNC_GT OVERRIDE
+  bool can_compile() override;
 };
 
 /**
@@ -1166,9 +1164,8 @@ class Item_func_le final : public Item_func_comparison {
                              const MY_BITMAP *fields_to_ignore,
                              double rows_in_table) override;
 
-  // COMPILABLE
-  bool can_compile() override { return true; }
-  bool can_compile_result = true;
+  // COMPILABLE CAN COMPILE ITEM_FUNC_LE OVERRIDE
+  bool can_compile() override;
 };
 
 /**
@@ -1211,9 +1208,8 @@ class Item_func_lt final : public Item_func_comparison {
                              const MY_BITMAP *fields_to_ignore,
                              double rows_in_table) override;
 
-  // COMPILABLE
-  bool can_compile() override { return true; }
-  bool can_compile_result = true;
+  // COMPILABLE CAN COMPILE ITEM_FUNC_LT OVERRIDE
+  bool can_compile() override;
 };
 
 /**
@@ -1324,8 +1320,7 @@ class Item_func_between final : public Item_func_opt_neg {
   }
 
   // COMPILABLE
-  bool can_compile() override { return true; }
-  bool can_compile_result = true;
+  bool can_compile() override;
 };
 
 class Item_func_strcmp final : public Item_bool_func2 {
@@ -2344,7 +2339,7 @@ class Item_func_like final : public Item_bool_func2 {
                              const MY_BITMAP *fields_to_ignore,
                              double rows_in_table) override;
 
-  // COMPILABLE CAN COMPILE ITEM_FUNC_EQ OVERRIDE
+  // COMPILABLE CAN COMPILE ITEM_FUNC_LIKE OVERRIDE
   bool can_compile() override;
 
  private:
@@ -2676,9 +2671,8 @@ class Item_cond_and final : public Item_cond {
 
   bool contains_only_equi_join_condition() const override;
 
-  // COMPILABLE
-  bool can_compile() override { return true; }
-  bool can_compile_result = true;
+  // COMPILABLE CAN COMPILE ITEM_COND_AND OVERRIDE
+  bool can_compile() override;
 };
 
 class Item_cond_or final : public Item_cond {
@@ -2707,9 +2701,8 @@ class Item_cond_or final : public Item_cond {
                              const MY_BITMAP *fields_to_ignore,
                              double rows_in_table) override;
 
-  // COMPILABLE
-  bool can_compile() override { return true; }
-  bool can_compile_result = true;
+  // COMPILABLE CAN COMPILE ITEM_COND_OR OVERRIDE
+  bool can_compile() override;
 };
 
 /// Builds condition: (a AND b) IS TRUE

@@ -18,7 +18,9 @@ void compile_children(THD *thd, jit::JITExecutionContext *jit_execution_context,
     (void)int_item;
     return;
   } else if (Item_func *item_func_eq = dynamic_cast<Item_func *>(item)) {
-    if (item_func_eq->arguments()[0]->can_compile_result) {
+    auto items = item_func_eq->arguments();
+
+    if (items[0] != nullptr && items[0]->can_compile_result) {
       Item_compiled *left_child_compiled = jit::create_item_compiled_from_item(
           jit_execution_context, item_func_eq->arguments()[0]);
       item_func_eq->set_arg(thd, 0, left_child_compiled);
@@ -26,7 +28,7 @@ void compile_children(THD *thd, jit::JITExecutionContext *jit_execution_context,
       compile_children(thd, jit_execution_context,
                        item_func_eq->arguments()[0]);
     }
-    if (item_func_eq->arguments()[1]->can_compile_result) {
+    if (items[1] != nullptr && items[1]->can_compile_result) {
       Item_compiled *right_child_compiled = jit::create_item_compiled_from_item(
           jit_execution_context, item_func_eq->arguments()[1]);
       item_func_eq->set_arg(thd, 1, right_child_compiled);
