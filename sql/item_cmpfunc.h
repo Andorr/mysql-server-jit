@@ -1233,6 +1233,9 @@ class Item_func_ne final : public Item_func_comparison {
                              table_map read_tables,
                              const MY_BITMAP *fields_to_ignore,
                              double rows_in_table) override;
+
+  // COMPILABLE CAN COMPILE ITEM_FUNC_NE OVERRIDE
+  bool can_compile() override;
 };
 
 /*

@@ -2540,6 +2540,11 @@ bool Item_func_between::can_compile() {
   return can_compile_result;
 }
 
+bool Item_func_ne::can_compile() {
+  can_compile_result = args[0]->can_compile() && args[1]->can_compile();
+  return can_compile_result;
+}
+
 /** Same as Item_func_eq, but NULL = NULL. */
 
 bool Item_func_equal::resolve_type(THD *thd) {
