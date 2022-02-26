@@ -17,6 +17,7 @@ class Item_func_between;
 class Item_func_ge;
 class Item_func_le;
 class Item_func_like;
+class Item_func_ne;
 
 namespace jit {
 
@@ -51,6 +52,8 @@ llvm::Value *codegen_item_func_lt(Item_func_lt *item,
                                   jit::JITBuilderContext *context);
 llvm::Value *codegen_item_func_like(Item_func_like *item,
                                     jit::JITBuilderContext *context);
+llvm::Value *codegen_item_func_ne(Item_func_ne *item,
+                                  jit::JITBuilderContext *context);
 
 }  // namespace jit
 

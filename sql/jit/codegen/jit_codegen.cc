@@ -34,6 +34,8 @@ llvm::Value *jit::codegen_item(Item *item, jit::JITBuilderContext *context) {
   } else if (Item_func_like *item_func_like =
                  dynamic_cast<Item_func_like *>(item)) {
     return jit::codegen_item_func_like(item_func_like, context);
+  } else if (Item_func_ne *item_func_ne = dynamic_cast<Item_func_ne *>(item)) {
+    return jit::codegen_item_func_ne(item_func_ne, context);
   }
   return nullptr;
 }
