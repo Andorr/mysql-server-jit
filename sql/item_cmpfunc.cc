@@ -2488,6 +2488,11 @@ longlong Item_func_eq::val_int() {
 }
 
 // COMPILABLE CAN COMPILE ITEM_FUNC_EQ OVERRIDE IMPLEMENTATION
+bool Item_func_not::can_compile() {
+  can_compile_result = args[0]->can_compile();
+  return can_compile_result;
+}
+
 bool Item_func_eq::can_compile() {
   printf("Item_func_eq called, comparing: %s and %s", args[0]->full_name(),
          args[1]->full_name());

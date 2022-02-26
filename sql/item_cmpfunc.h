@@ -742,6 +742,9 @@ class Item_func_not : public Item_bool_func {
                              table_map read_tables,
                              const MY_BITMAP *fields_to_ignore,
                              double rows_in_table) override;
+
+  // COMPIlABLE CAN COMPILE OVERRIDE
+  bool can_compile() override;
 };
 
 /**
