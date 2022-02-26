@@ -91,9 +91,10 @@ llvm::Value *codegen_item_func_not(Item_func_not *item,
   llvm::Value *cmp = context->builder->CreateNot(item_a_value, "int > int");
   return context->builder->CreateIntCast(
       cmp, llvm::Type::getInt64Ty(*context->context), false);
-  llvm::Value *codegen_item_func_ne(Item_func_ne * item,
-                                    jit::JITBuilderContext * context) {
-    CMPFUNC(context->builder->CreateICmpNE)
-  }
+}
+llvm::Value *codegen_item_func_ne(Item_func_ne *item,
+                                  jit::JITBuilderContext *context) {
+  CMPFUNC(context->builder->CreateICmpNE)
+}
 
 }  // namespace jit
