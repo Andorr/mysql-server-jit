@@ -50,7 +50,7 @@ template <class RealIterator>
 class TimingIterator final : public RowIterator {
  public:
   template <class... Args>
-  TimingIterator(THD *thd, Args &&... args)
+  TimingIterator(THD *thd, Args &&...args)
       : RowIterator(thd), m_iterator(thd, std::forward<Args>(args)...) {}
 
   bool Init() override;
@@ -189,7 +189,7 @@ std::string TimingIterator<RealIterator>::TimingString() const {
 
 template <class RealIterator, class... Args>
 unique_ptr_destroy_only<RowIterator> NewIterator(THD *thd, MEM_ROOT *mem_root,
-                                                 Args &&... args) {
+                                                 Args &&...args) {
   if (thd->lex->is_explain_analyze) {
     return unique_ptr_destroy_only<RowIterator>(
         new (mem_root)
