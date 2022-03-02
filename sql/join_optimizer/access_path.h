@@ -1319,6 +1319,7 @@ inline AccessPath *NewFilterAccessPath(THD *thd, AccessPath *child,
 
   // COMPILABLE CAN COMPILE HERE?????
   // Check if can compile before setting condition
+  fprintf(stderr, "CHECKING IF SHOULD COMPILE: %d\n", current_thd->variables.should_jit_compile);
   if (current_thd->variables.should_jit_compile) {
     fprintf(stderr, "Should compile query\n");
 

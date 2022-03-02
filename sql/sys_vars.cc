@@ -2956,6 +2956,18 @@ static Sys_var_bool Sys_should_jit_compile(
   HINT_UPDATEABLE SESSION_VAR(should_jit_compile), CMD_LINE(OPT_ARG),
   DEFAULT(false)
 );
+// COMPILABLE SHOULD JIT COMPILE TOGGLE FLAG
+static Sys_var_bool Sys_should_time_val_int_call(
+  "should_time_val_int_call", "Enable timing of compilation",
+  HINT_UPDATEABLE SESSION_VAR(should_time_val_int_call), CMD_LINE(OPT_ARG),
+  DEFAULT(false)
+);
+// COMPILABLE SHOULD JIT COMPILE TOGGLE FLAG
+static Sys_var_bool Sys_should_count_instructions(
+  "should_count_instructions", "Enable counting of instructions of rowiterator::read",
+  HINT_UPDATEABLE SESSION_VAR(should_count_instructions), CMD_LINE(OPT_ARG),
+  DEFAULT(false)
+);
 
 static PolyLock_mutex PLock_prepared_stmt_count(&LOCK_prepared_stmt_count);
 

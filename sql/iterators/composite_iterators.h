@@ -46,6 +46,8 @@
 #include <utility>
 #include <vector>
 
+#include <chrono>
+
 #include "my_alloc.h"
 #include "my_base.h"
 #include "my_inttypes.h"
@@ -96,6 +98,27 @@ class FilterIterator final : public RowIterator {
  private:
   unique_ptr_destroy_only<RowIterator> m_source;
   Item *m_condition;
+
+// COMPILABLE ADD SUPPORT FOR TIMING IN FILTERITERATOR, SAME CODE AS USED IN TIMINGITERATOR
+  private:
+  // To avoid a lot of repetitive writing.
+  using steady_clock = std::chrono::steady_clock;
+  template <class T>
+  using duration = std::chrono::duration<T>;
+
+  steady_clock::time_point now() const {
+#if defined(__linux__)
+    // Work around very slow libstdc++ implementations of std::chrono
+    // (those compiled with _GLIBCXX_USE_CLOCK_GETTIME_SYSCALL).
+    timespec tp;
+    clock_gettime(CLOCK_MONOTONIC, &tp);
+    return steady_clock::time_point(
+        steady_clock::duration(std::chrono::seconds(tp.tv_sec) +
+                               std::chrono::nanoseconds(tp.tv_nsec)));
+#else
+    return steady_clock::now();
+#endif
+  }
 };
 
 /**

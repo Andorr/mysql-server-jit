@@ -19,6 +19,29 @@ class Item_compiled : public Item {
 
   std::unique_ptr<uint64_t> compiled_func;
 
+    // To avoid a lot of repetitive writing.
+  using steady_clock = std::chrono::steady_clock;
+  template <class T>
+  using duration = std::chrono::duration<T>;
+
+  steady_clock::time_point now() const {
+#if defined(__linux__)
+    // Work around very slow libstdc++ implementations of std::chrono
+    // (those compiled with _GLIBCXX_USE_CLOCK_GETTIME_SYSCALL).
+    timespec tp;
+    clock_gettime(CLOCK_MONOTONIC, &tp);
+    return steady_clock::time_point(
+        steady_clock::duration(std::chrono::seconds(tp.tv_sec) +
+                               std::chrono::nanoseconds(tp.tv_nsec)));
+#else
+    return steady_clock::now();
+#endif
+  }
+
+
+  // COMPILABLE COMPILE TIME TIMING 
+  std::chrono::steady_clock::time_point::duration compile_time{0};
+
  public:
   Item_compiled(jit::JITExecutionContext *exec_ctx, Item *item) : Item() {
     this->builder_ctx = exec_ctx->new_builder_context();

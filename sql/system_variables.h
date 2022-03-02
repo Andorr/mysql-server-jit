@@ -220,6 +220,11 @@ struct System_variables {
   ulong max_points_in_geometry;
   // COMPILABLE SHOULD JIT COMPILE TOGGLE FLAG VARIABLE
   bool should_jit_compile;
+  // COMPILABLE EXTRA TIMING FLAG
+  bool should_time_val_int_call;
+  // COMPILABLE EXTRA INSTRUCTION COUNT INFORMATION FLAG
+  bool should_count_instructions;
+  
   ulong max_sort_length;
   ulong max_insert_delayed_threads;
   ulong min_examined_row_limit;
