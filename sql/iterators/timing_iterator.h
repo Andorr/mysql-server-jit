@@ -164,7 +164,7 @@ std::string TimingIterator<RealIterator>::TimingString() const {
           .count() *
       1e3;
   double time_spent_on_val_int_calls_ms =
-    duration<double>(time_spent_on_val_int_calls).count() * 1e3;
+      duration<double>(time_spent_on_val_int_calls).count() * 1e3;
   char buf[1024];
   GetTimingData<RealIterator> timing_data;
   const uint64_t num_init_calls =
@@ -174,9 +174,10 @@ std::string TimingIterator<RealIterator>::TimingString() const {
     snprintf(buf, sizeof(buf), "(never executed)");
   } else {
     snprintf(buf, sizeof(buf),
-             "time_spent_on_val_int_calls(%.3f) (actual time=%.3f..%.3f rows=%lld loops=%" PRIu64 ")",
-             time_spent_on_val_int_calls_ms,
-             first_row_ms / num_init_calls, last_row_ms / num_init_calls,
+             "(time_spent_on_val_int_calls=%.3f) (actual time=%.3f..%.3f "
+             "rows=%lld loops=%" PRIu64 ")",
+             time_spent_on_val_int_calls_ms, first_row_ms / num_init_calls,
+             last_row_ms / num_init_calls,
              llrintf(static_cast<double>(num_rows) / num_init_calls),
              num_init_calls);
   }

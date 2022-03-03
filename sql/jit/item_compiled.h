@@ -19,7 +19,7 @@ class Item_compiled : public Item {
 
   std::unique_ptr<uint64_t> compiled_func;
 
-    // To avoid a lot of repetitive writing.
+  // To avoid a lot of repetitive writing.
   using steady_clock = std::chrono::steady_clock;
   template <class T>
   using duration = std::chrono::duration<T>;
@@ -38,9 +38,9 @@ class Item_compiled : public Item {
 #endif
   }
 
-
-  // COMPILABLE COMPILE TIME TIMING 
+  // COMPILABLE COMPILE TIME TIMING
   std::chrono::steady_clock::time_point::duration compile_time{0};
+  std::chrono::steady_clock::time_point::duration codegen_time{0};
 
  public:
   Item_compiled(jit::JITExecutionContext *exec_ctx, Item *item) : Item() {

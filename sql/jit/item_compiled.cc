@@ -22,8 +22,12 @@
 #include "llvm/IR/Verifier.h"
 
 void Item_compiled::codegen_item() {
-  // Create function
+  // COMPILABLEC CODEGEN TIME TIMETAKING
+  steady_clock::time_point start;
+  steady_clock::time_point end;
 
+  // Create function
+  start = now();
   // We always return an 64-bit integer
   auto return_type = llvm::Type::getInt64Ty(*builder_ctx->context);
   llvm::FunctionType *functionType =
@@ -41,13 +45,14 @@ void Item_compiled::codegen_item() {
 
   llvm::Value *value = jit::codegen_item(this->item, builder_ctx.get());
   builder_ctx->builder->CreateRet(value);
+  end = now();
+  codegen_time += end - start;
 }
 
 void Item_compiled::jit_compile(jit::JITExecutionContext *exec_ctx) {
-
   // COMPILABLEC COMPILE TIME TIMETAKING
-    steady_clock::time_point start;
-    steady_clock::time_point end;
+  steady_clock::time_point start;
+  steady_clock::time_point end;
 
   llvm::ExitOnError exit_on_err;
   auto TSM = llvm::orc::ThreadSafeModule(std::move(builder_ctx->func_module),
@@ -86,18 +91,18 @@ void Item_compiled::print_ir() {
 
 void Item_compiled::print(const THD *thd, String *str,
                           enum_query_type query_type) const {
-
+  double codegen_time_ms = duration<double>(codegen_time).count() * 1e3;
   double compile_time_ms = duration<double>(compile_time).count() * 1e3;
-  
-  const char* format_str = "Item_compiled(%.3f) ";
 
-  int str_size = std::snprintf(nullptr, 0, format_str, compile_time_ms);
+  const char *format_str = "Item_compiled(codegen=%.3f compile=%.3f) ";
+
+  int str_size =
+      std::snprintf(nullptr, 0, format_str, codegen_time_ms, compile_time_ms);
   auto size = static_cast<size_t>(str_size);
 
   auto buf = std::make_unique<char[]>(size);
 
-  std::snprintf(buf.get(), size, format_str, compile_time_ms);
-
+  std::snprintf(buf.get(), size, format_str, codegen_time_ms, compile_time_ms);
 
   // str->reserve(sizeof("Item_compiled") - 1);
   // str->append(STRING_WITH_LEN("Item_compiled"));
