@@ -80,21 +80,22 @@ llvm::Value *codegen_item_func_le(Item_func_le *item,
                                   jit::JITBuilderContext *context){
     CMPFUNC(context->builder->CreateICmpSLE)}
 
+llvm::Value *codegen_item_func_ne(Item_func_ne *item,
+                                  jit::JITBuilderContext *context){
+    CMPFUNC(context->builder->CreateICmpNE)}
+
 llvm::Value *codegen_item_func_not(Item_func_not *item,
                                    jit::JITBuilderContext *context) {
   Item **arguments = item->arguments();
-  Item *a = arguments[0];
   llvm::Value *item_a_value = jit::codegen_item(arguments[0], context);
   if (!item_a_value) {
     return nullptr;
   }
-  llvm::Value *cmp = context->builder->CreateNot(item_a_value, "int > int");
+  llvm::Value *i1 = context->builder->CreateIntCast(
+      item_a_value, llvm::Type::getInt1Ty(*context->context), false);
+  llvm::Value *cmp = context->builder->CreateNot(i1, "not int");
   return context->builder->CreateIntCast(
       cmp, llvm::Type::getInt64Ty(*context->context), false);
-}
-llvm::Value *codegen_item_func_ne(Item_func_ne *item,
-                                  jit::JITBuilderContext *context) {
-  CMPFUNC(context->builder->CreateICmpNE)
 }
 
 }  // namespace jit
