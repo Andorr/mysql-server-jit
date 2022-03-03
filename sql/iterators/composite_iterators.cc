@@ -73,7 +73,17 @@ int FilterIterator::Read() {
     int err = m_source->Read();
     if (err != 0) return err;
 
+    // COMPILABLE TIME ONLY CODE EXECUTION FOR FILTERITERATOR
+    steady_clock::time_point start;
+    steady_clock::time_point end;
+    if (current_thd->variables.should_time_val_int_call) {
+       start = now();
+    }
     bool matched = m_condition->val_int();
+    if (current_thd->variables.should_time_val_int_call) {
+      end = now();
+      time_spent_on_val_int_calls += end - start;
+    }
 
     if (thd()->killed) {
       thd()->send_kill_message();

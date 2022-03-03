@@ -44,6 +44,11 @@ void Item_compiled::codegen_item() {
 }
 
 void Item_compiled::jit_compile(jit::JITExecutionContext *exec_ctx) {
+
+  // COMPILABLEC COMPILE TIME TIMETAKING
+    steady_clock::time_point start;
+    steady_clock::time_point end;
+
   llvm::ExitOnError exit_on_err;
   auto TSM = llvm::orc::ThreadSafeModule(std::move(builder_ctx->func_module),
                                          std::move(builder_ctx->context));
@@ -55,12 +60,16 @@ void Item_compiled::jit_compile(jit::JITExecutionContext *exec_ctx) {
   }
 
   // TODO: Replace exit_on_err with better error-handling
+  // COMPILABLE COMPILE TIME ACTUAL TIMETAKING
+  start = now();
   if (auto expr_symbol = exec_ctx->lookup(this->name.c_str())) {
     this->compiled_func =
         std::make_unique<uint64_t>((uint64_t)(*expr_symbol).getAddress());
   } else {
     // debug_print("error: was not able to lookup __main");
   }
+  end = now();
+  compile_time += end - start;
 }
 
 longlong Item_compiled::val_int() {
@@ -77,8 +86,24 @@ void Item_compiled::print_ir() {
 
 void Item_compiled::print(const THD *thd, String *str,
                           enum_query_type query_type) const {
-  str->reserve(sizeof("Item_compiled") - 1);
-  str->append(STRING_WITH_LEN("Item_compiled"));
+
+  double compile_time_ms = duration<double>(compile_time).count() * 1e3;
+  
+  const char* format_str = "Item_compiled(%.3f) ";
+
+  int str_size = std::snprintf(nullptr, 0, format_str, compile_time_ms);
+  auto size = static_cast<size_t>(str_size);
+
+  auto buf = std::make_unique<char[]>(size);
+
+  std::snprintf(buf.get(), size, format_str, compile_time_ms);
+
+
+  // str->reserve(sizeof("Item_compiled") - 1);
+  // str->append(STRING_WITH_LEN("Item_compiled"));
+
+  str->reserve(str_size - 1);
+  str->append(buf.get(), size - 1);
 }
 
 std::string gen_random(const int len) {
