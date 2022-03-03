@@ -163,8 +163,9 @@ std::string TimingIterator<RealIterator>::TimingString() const {
       duration<double>(m_time_spent_in_first_row + m_time_spent_in_other_rows)
           .count() *
       1e3;
+
   double time_spent_on_val_int_calls_ms =
-      duration<double>(time_spent_on_val_int_calls).count() * 1e3;
+      duration<double>(m_iterator.time_spent_on_val_int_calls).count() * 1e3;
   char buf[1024];
   GetTimingData<RealIterator> timing_data;
   const uint64_t num_init_calls =
