@@ -279,6 +279,7 @@ TEST_F(JITItemCompiledTests, CompileItemFuncLike) {
   item = new Item_compiled(jit_exec_ctx.get(), item_like_b);
 
   item->codegen_item();
+  item->print_ir();
   item->jit_compile(jit_exec_ctx.get());
   result = item->val_int();
   ASSERT_EQ(result, 1);
@@ -288,7 +289,60 @@ TEST_F(JITItemCompiledTests, CompileItemFuncLike) {
   item = new Item_compiled(jit_exec_ctx.get(), item_like_c);
 
   item->codegen_item();
+  item->print_ir();
   item->jit_compile(jit_exec_ctx.get());
   result = item->val_int();
+  ASSERT_EQ(result, 0);
+}
+
+TEST_F(JITItemCompiledTests, CompileItemFuncNe) {
+  auto jit_exec_ctx = jit::JITExecutionContext::new_exec_context();
+  ASSERT_TRUE(jit_exec_ctx != nullptr);
+
+  const char *str_a = "Hello";
+  const char *str_b = "Hello";
+  const char *str_c = "YHello world! :D";
+  const char *str_d = "Yello world! :D";
+
+  Item *item_str_a = new Item_string(str_a, 5, &my_charset_utf8mb4_general_ci);
+  Item *item_str_b = new Item_string(str_b, 5, &my_charset_utf8mb4_general_ci);
+  Item *item_str_c = new Item_string(str_c, 16, &my_charset_utf8mb4_general_ci);
+  Item *item_str_d = new Item_string(str_d, 15, &my_charset_utf8mb4_general_ci);
+  Item *item_ne_a = new Item_func_ne(item_str_c, item_str_b);
+  item_ne_a->fix_fields(thd(), &item_ne_a);
+  Item_compiled *item = new Item_compiled(jit_exec_ctx.get(), item_ne_a);
+
+  item->codegen_item();
+  item->print_ir();
+  item->jit_compile(jit_exec_ctx.get());
+  auto result = item->val_int();
+  ASSERT_EQ(result, 1);
+
+  Item *item_ne_b = new Item_func_ne(item_str_a, item_str_b);
+  item_ne_b->fix_fields(thd(), &item_ne_b);
+  item = new Item_compiled(jit_exec_ctx.get(), item_ne_b);
+
+  item->codegen_item();
+  item->print_ir();
+  item->jit_compile(jit_exec_ctx.get());
+  result = item->val_int();
+  ASSERT_EQ(result, 0);
+}
+
+TEST_F(JITItemCompiledTests, CompileItemFuncNot) {
+  auto jit_exec_ctx = jit::JITExecutionContext::new_exec_context();
+  ASSERT_TRUE(jit_exec_ctx != nullptr);
+
+  Item *item_int_a = new Item_int(10);
+  Item *item_int_b = new Item_int(20);
+  Item *item_le_c = new Item_func_le(item_int_a, item_int_b);
+  Item *item_not_a = new Item_func_not(item_le_c);
+  item_not_a->fix_fields(thd(), &item_not_a);
+  Item_compiled *item = new Item_compiled(jit_exec_ctx.get(), item_not_a);
+
+  item->codegen_item();
+  item->print_ir();
+  item->jit_compile(jit_exec_ctx.get());
+  auto result = item->val_int();
   ASSERT_EQ(result, 0);
 }
