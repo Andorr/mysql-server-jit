@@ -9,6 +9,9 @@ namespace jit {
 llvm::Value *codegen_item_cond_or(Item_cond_or *item,
                                   jit::JITBuilderContext *context) {
   auto list = *item->argument_list();
+  auto list_count = list.size();
+
+  fprintf(stderr, "OR length: %d\n", list.size());
 
   llvm::Value *item_a_value = jit::codegen_item(list[0], context);
   if (!item_a_value) {
@@ -20,8 +23,13 @@ llvm::Value *codegen_item_cond_or(Item_cond_or *item,
     return nullptr;
   }
 
-  llvm::Value *item_or =
-      context->builder->CreateOr(item_a_value, item_b_value, "int or int");
+  llvm::Value *item_or = context->builder->CreateOr(item_a_value, item_b_value);
+
+  for (uint i = 2; i < list_count; i++) {
+    llvm::Value *item_i_value = jit::codegen_item(list[i], context);
+    item_or = context->builder->CreateOr(item_or, item_i_value);
+  }
+
   return context->builder->CreateIntCast(
       item_or, llvm::Type::getInt64Ty(*context->context), false);
 }
@@ -29,6 +37,8 @@ llvm::Value *codegen_item_cond_or(Item_cond_or *item,
 llvm::Value *codegen_item_cond_and(Item_cond_and *item,
                                    jit::JITBuilderContext *context) {
   auto list = *item->argument_list();
+  auto list_count = list.size();
+  fprintf(stderr, "OR length: %d\n", list.size());
 
   llvm::Value *item_a_value = jit::codegen_item(list[0], context);
   if (!item_a_value) {
@@ -41,7 +51,13 @@ llvm::Value *codegen_item_cond_and(Item_cond_and *item,
   }
 
   llvm::Value *item_or =
-      context->builder->CreateAnd(item_a_value, item_b_value, "int and int");
+      context->builder->CreateAnd(item_a_value, item_b_value);
+
+  for (uint i = 2; i < list_count; i++) {
+    llvm::Value *item_i_value = jit::codegen_item(list[i], context);
+    item_or = context->builder->CreateAnd(item_or, item_i_value);
+  }
+
   return context->builder->CreateIntCast(
       item_or, llvm::Type::getInt64Ty(*context->context), false);
 }

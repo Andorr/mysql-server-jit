@@ -94,21 +94,24 @@ void Item_compiled::print(const THD *thd, String *str,
   double codegen_time_ms = duration<double>(codegen_time).count() * 1e3;
   double compile_time_ms = duration<double>(compile_time).count() * 1e3;
 
-  const char *format_str = "Item_compiled(codegen=%.3f compile=%.3f) ";
+  const char *format_str = "Item_compiled[%s](codegen=%.3f compile=%.3f) ";
 
-  int str_size =
-      std::snprintf(nullptr, 0, format_str, codegen_time_ms, compile_time_ms);
+  int str_size = std::snprintf(nullptr, 0, format_str, this->name.c_str(),
+                               codegen_time_ms, compile_time_ms);
   auto size = static_cast<size_t>(str_size);
 
   auto buf = std::make_unique<char[]>(size);
 
-  std::snprintf(buf.get(), size, format_str, codegen_time_ms, compile_time_ms);
+  std::snprintf(buf.get(), size, format_str, this->name.c_str(),
+                codegen_time_ms, compile_time_ms);
 
   // str->reserve(sizeof("Item_compiled") - 1);
   // str->append(STRING_WITH_LEN("Item_compiled"));
 
   str->reserve(str_size - 1);
   str->append(buf.get(), size - 1);
+
+  this->item->print(thd, str, query_type);
 }
 
 std::string gen_random(const int len) {
