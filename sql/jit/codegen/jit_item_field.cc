@@ -25,10 +25,14 @@ llvm::Value *codegen_item_field(Item_field *item,
   llvm::Value *row_column_ptr = context->builder->CreateAdd(
       row_start_ptr, field_offset_value, "row_column_ptr");
 
+  // Load integer value as 32, as MySQL INTEGER is 32 bit.
   llvm::Value *column_value =
-      context->builder->CreateLoad(llvm::Type::getInt64Ty(*context->context),
+      context->builder->CreateLoad(llvm::Type::getInt32Ty(*context->context),
                                    row_column_ptr, "column_value");
+  // We are working with 64 bit values
+  llvm::Value *column_value_64 = context->builder->CreateIntCast(
+      column_value, llvm::Type::getInt64Ty(*context->context), false);
 
-  return column_value;
+  return column_value_64;
 }
 }  // namespace jit
