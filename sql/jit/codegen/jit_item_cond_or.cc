@@ -11,8 +11,6 @@ llvm::Value *codegen_item_cond_or(Item_cond_or *item,
   auto list = *item->argument_list();
   auto list_count = list.size();
 
-  fprintf(stderr, "OR length: %d\n", list.size());
-
   llvm::Value *output = nullptr;
   if (list_count == 1) {
     output = jit::codegen_item(list[0], context);
@@ -46,7 +44,6 @@ llvm::Value *codegen_item_cond_and(Item_cond_and *item,
                                    jit::JITBuilderContext *context) {
   auto list = *item->argument_list();
   auto list_count = list.size();
-  fprintf(stderr, "AND length: %d\n", list.size());
 
   llvm::Value *output = nullptr;
   if (list_count == 1) {
