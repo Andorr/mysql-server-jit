@@ -2526,12 +2526,18 @@ bool Item_func_gt::can_compile() {
 }
 
 bool Item_cond_and::can_compile() {
-  can_compile_result = list[0]->can_compile() && list[1]->can_compile();
+  can_compile_result = true;
+  for (uint i = 0; i < list.size(); i++) {
+    can_compile_result = can_compile_result && list[i]->can_compile();
+  }
   return can_compile_result;
 }
 
 bool Item_cond_or::can_compile() {
-  can_compile_result = list[0]->can_compile() && list[1]->can_compile();
+  can_compile_result = true;
+  for (uint i = 0; i < list.size(); i++) {
+    can_compile_result = can_compile_result && list[i]->can_compile();
+  }
   return can_compile_result;
 }
 

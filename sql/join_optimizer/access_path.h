@@ -30,6 +30,7 @@
 #include <type_traits>
 #include <vector>
 
+#include "sql/enum_query_type.h"
 #include "sql/join_optimizer/interesting_orders_defs.h"
 #include "sql/join_optimizer/materialize_path_parameters.h"
 #include "sql/join_optimizer/node_map.h"
@@ -1319,9 +1320,10 @@ inline AccessPath *NewFilterAccessPath(THD *thd, AccessPath *child,
 
   // COMPILABLE CAN COMPILE HERE?????
   // Check if can compile before setting condition
-  fprintf(stderr, "CHECKING IF SHOULD COMPILE: %d\n", current_thd->variables.should_jit_compile);
+  // fprintf(stderr, "CHECKING IF SHOULD COMPILE: %d\n",
+  // current_thd->variables.should_jit_compile);
   if (current_thd->variables.should_jit_compile) {
-    fprintf(stderr, "Should compile query\n");
+    // fprintf(stderr, "Should compile query\n");
 
     if (!jit::initialized) {
       jit::initialize();
