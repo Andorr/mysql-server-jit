@@ -2956,6 +2956,12 @@ static Sys_var_bool Sys_should_jit_compile(
   HINT_UPDATEABLE SESSION_VAR(should_jit_compile), CMD_LINE(OPT_ARG),
   DEFAULT(false)
 );
+// COMPILABLE SHOULD TIME COMPILE
+static Sys_var_bool Sys_should_time_compile_time(
+  "should_time_compile_time", "Enable timing of compilation",
+  HINT_UPDATEABLE SESSION_VAR(should_time_compile_time), CMD_LINE(OPT_ARG),
+  DEFAULT(false)
+);
 // COMPILABLE SHOULD JIT COMPILE TOGGLE FLAG
 static Sys_var_bool Sys_should_time_val_int_call(
   "should_time_val_int_call", "Enable timing of compilation",

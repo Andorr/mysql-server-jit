@@ -8,6 +8,9 @@
 #include "sql/jit/item_compiled.h"
 #include "string"
 
+#include "sql/sql_class.h"
+#include "sql/current_thd.h"
+
 #include "llvm/ExecutionEngine/Orc/ThreadSafeModule.h"
 #include "llvm/IR/Argument.h"
 #include "llvm/IR/BasicBlock.h"
@@ -27,7 +30,9 @@ void Item_compiled::codegen_item() {
   steady_clock::time_point end;
 
   // Create function
-  start = now();
+  if (current_thd->variables.should_time_compile_time) {
+    start = now();
+  }
   // We always return an 64-bit integer
   auto return_type = llvm::Type::getInt64Ty(*builder_ctx->context);
   llvm::FunctionType *functionType =
@@ -45,8 +50,10 @@ void Item_compiled::codegen_item() {
 
   llvm::Value *value = jit::codegen_item(this->item, builder_ctx.get());
   builder_ctx->builder->CreateRet(value);
-  end = now();
-  codegen_time += end - start;
+  if (current_thd->variables.should_time_compile_time) {
+    end = now();
+    codegen_time += end - start;
+  }
 }
 
 void Item_compiled::jit_compile(jit::JITExecutionContext *exec_ctx) {
@@ -66,15 +73,19 @@ void Item_compiled::jit_compile(jit::JITExecutionContext *exec_ctx) {
 
   // TODO: Replace exit_on_err with better error-handling
   // COMPILABLE COMPILE TIME ACTUAL TIMETAKING
-  start = now();
+  if (current_thd->variables.should_time_compile_time) {
+    start = now();
+  }
   if (auto expr_symbol = exec_ctx->lookup(this->name.c_str())) {
     this->compiled_func =
         std::make_unique<uint64_t>((uint64_t)(*expr_symbol).getAddress());
   } else {
     // debug_print("error: was not able to lookup __main");
   }
-  end = now();
-  compile_time += end - start;
+  if (current_thd->variables.should_time_compile_time) {
+    end = now();
+    compile_time += end - start;
+  }
 }
 
 longlong Item_compiled::val_int() {

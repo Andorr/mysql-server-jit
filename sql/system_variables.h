@@ -221,6 +221,7 @@ struct System_variables {
   // COMPILABLE SHOULD JIT COMPILE TOGGLE FLAG VARIABLE
   bool should_jit_compile;
   // COMPILABLE EXTRA TIMING FLAG
+  bool should_time_compile_time;
   bool should_time_val_int_call;
   // COMPILABLE EXTRA INSTRUCTION COUNT INFORMATION FLAG
   bool should_count_instructions;
