@@ -12,6 +12,7 @@ llvm::Value *codegen_item_int(Item_int *item, jit::JITBuilderContext *context) {
 
 llvm::Value *codegen_item_cache_int(Item_cache_int *item,
                                     jit::JITBuilderContext *context) {
+  item->cache_value();
   return llvm::ConstantInt::get(*context->context,
                                 llvm::APInt(64, (uint64_t)item->value));
 }
