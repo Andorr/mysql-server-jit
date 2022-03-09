@@ -59,12 +59,7 @@
 #include "sql/table.h"
 #include "sql_string.h"
 
-// COMPILABLE INCLUDES
-#include "sql/jit/item_compile_children.h"
-#include "sql/jit/item_compiled.h"
 #include "sql/jit/jit.h"
-#include "sql/jit/jit_common.h"
-#include "sql/jit/jit_exec_ctx.h"
 
 class Cached_item;
 class FollowTailIterator;
@@ -84,37 +79,13 @@ class Temp_table_param;
  */
 class FilterIterator final : public RowIterator {
  public:
+  Item *m_condition;
   FilterIterator(THD *thd, unique_ptr_destroy_only<RowIterator> source,
                  Item *condition)
       : RowIterator(thd), m_source(move(source)), m_condition(condition) {}
 
   bool Init() override {
-    // COMPILABLE CAN COMPILE HERE?????
-    // Check if can compile before setting condition
-    // fprintf(stderr, "CHECKING IF SHOULD COMPILE: %d\n",
-    // current_thd->variables.should_jit_compile);
-    auto cur_thd = thd();
-    if (cur_thd->variables.should_jit_compile) {
-      // fprintf(stderr, "Should compile query\n");
-
-      if (!jit::initialized) {
-        jit::initialize();
-      }
-
-      auto *jit_ctx = jit::new_jit_exec_ctx().release();
-
-      m_condition->can_compile();
-      if (m_condition->can_compile_result) {
-        // The entire where_cond item can be replaced by a Item_compiled
-        // *replace where_cond with new item_compiled*
-        Item_compiled *where_cond_compiled =
-            jit::create_item_compiled_from_item(jit_ctx, m_condition);
-        m_condition = where_cond_compiled;
-      } else {
-        compile_children(cur_thd, jit_ctx, m_condition);
-      }
-    }
-
+    jit::compile_filter_iterator(this);
     return m_source->Init();
   }
 
@@ -132,7 +103,6 @@ class FilterIterator final : public RowIterator {
 
  private:
   unique_ptr_destroy_only<RowIterator> m_source;
-  Item *m_condition;
 
   // COMPILABLE ADD SUPPORT FOR TIMING IN FILTERITERATOR, SAME CODE AS USED IN
   // TIMINGITERATOR

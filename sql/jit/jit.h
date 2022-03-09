@@ -15,6 +15,8 @@
 #include "memory"
 #include "optional"
 
+#include "sql/iterators/composite_iterators.h"
+
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/PassManager.h"
 #include "llvm/IR/Value.h"
@@ -25,6 +27,7 @@
 #include "item_compiled.h"
 
 class Item;
+class FilterIterator;
 // class Item_int;
 
 namespace jit {
@@ -36,6 +39,9 @@ Item_compiled *create_item_compiled_from_item(JITExecutionContext *jit_exec_ctx,
 void initialize();
 
 extern bool initialized;
+
+void compile_filter_iterator(FilterIterator *iterator);
+
 };  // namespace jit
 
 #endif
