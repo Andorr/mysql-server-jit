@@ -81,7 +81,35 @@ class FilterIterator final : public RowIterator {
                  Item *condition)
       : RowIterator(thd), m_source(move(source)), m_condition(condition) {}
 
-  bool Init() override { return m_source->Init(); }
+  bool Init() override {
+    // COMPILABLE CAN COMPILE HERE?????
+    // Check if can compile before setting condition
+    // fprintf(stderr, "CHECKING IF SHOULD COMPILE: %d\n",
+    // current_thd->variables.should_jit_compile);
+    auto cur_thd = thd();
+    if (cur_thd->variables.should_jit_compile) {
+      // fprintf(stderr, "Should compile query\n");
+
+      if (!jit::initialized) {
+        jit::initialize();
+      }
+
+      auto *jit_ctx = jit::new_jit_exec_ctx().release();
+
+      m_condition->can_compile();
+      if (m_condition->can_compile_result) {
+        // The entire where_cond item can be replaced by a Item_compiled
+        // *replace where_cond with new item_compiled*
+        Item_compiled *where_cond_compiled =
+            jit::create_item_compiled_from_item(jit_ctx, m_condition);
+        m_condition = where_cond_compiled;
+      } else {
+        compile_children(cur_thd, jit_ctx, m_condition);
+      }
+    }
+
+    return m_source->Init();
+  }
 
   int Read() override;
 
@@ -99,8 +127,9 @@ class FilterIterator final : public RowIterator {
   unique_ptr_destroy_only<RowIterator> m_source;
   Item *m_condition;
 
-// COMPILABLE ADD SUPPORT FOR TIMING IN FILTERITERATOR, SAME CODE AS USED IN TIMINGITERATOR
-  private:
+  // COMPILABLE ADD SUPPORT FOR TIMING IN FILTERITERATOR, SAME CODE AS USED IN
+  // TIMINGITERATOR
+ private:
   // To avoid a lot of repetitive writing.
   using steady_clock = std::chrono::steady_clock;
   template <class T>
