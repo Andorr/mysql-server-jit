@@ -59,7 +59,7 @@
 #include "sql/table.h"
 #include "sql_string.h"
 
-#include "sql/jit/jit.h"
+#include "sql/jit/jit_filter_iterator.h"
 
 class Cached_item;
 class FollowTailIterator;

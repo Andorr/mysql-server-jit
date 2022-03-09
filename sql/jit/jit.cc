@@ -17,6 +17,7 @@
 #include "sql/jit/jit.h"
 #include "sql/jit/jit_common.h"
 #include "sql/jit/jit_exec_ctx.h"
+#include "sql/jit/jit_filter_iterator.h"
 
 using namespace jit;
 
@@ -43,7 +44,7 @@ void jit::initialize() {
 
 bool jit::initialized = false;
 
-void compile_filter_iterator(FilterIterator *iterator) {
+void jit::compile_filter_iterator(FilterIterator *iterator) {
   // COMPILABLE CAN COMPILE HERE?????
   // Check if can compile before setting condition
   // fprintf(stderr, "CHECKING IF SHOULD COMPILE: %d\n",
