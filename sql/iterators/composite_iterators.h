@@ -59,6 +59,13 @@
 #include "sql/table.h"
 #include "sql_string.h"
 
+// COMPILABLE INCLUDES
+#include "sql/jit/item_compile_children.h"
+#include "sql/jit/item_compiled.h"
+#include "sql/jit/jit.h"
+#include "sql/jit/jit_common.h"
+#include "sql/jit/jit_exec_ctx.h"
+
 class Cached_item;
 class FollowTailIterator;
 class Item;

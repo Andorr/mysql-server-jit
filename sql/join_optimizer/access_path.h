@@ -41,13 +41,6 @@
 #include "sql/sql_array.h"
 #include "sql/sql_class.h"
 
-// COMPILABLE INCLUDES
-#include "sql/jit/item_compile_children.h"
-#include "sql/jit/item_compiled.h"
-#include "sql/jit/jit.h"
-#include "sql/jit/jit_common.h"
-#include "sql/jit/jit_exec_ctx.h"
-
 template <class T>
 class Bounds_checked_array;
 class Common_table_expr;
