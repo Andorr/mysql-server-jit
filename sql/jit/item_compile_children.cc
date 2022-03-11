@@ -26,8 +26,8 @@ void compile_children(THD *thd, jit::JITExecutionContext *jit_execution_context,
     items.clear();
 
     if (left_item != nullptr && left_item->can_compile_result) {
-      Item_compiled *left_child_compiled =
-          jit::create_item_compiled_from_item(jit_execution_context, left_item);
+      Item_compiled *left_child_compiled = jit::create_item_compiled_from_item(
+          thd, jit_execution_context, left_item);
       // *(&left_item) = *left_child_compiled;
       items.push_back(left_child_compiled);
     } else {
@@ -36,7 +36,7 @@ void compile_children(THD *thd, jit::JITExecutionContext *jit_execution_context,
     }
     if (right_item != nullptr && right_item->can_compile_result) {
       Item_compiled *right_child_compiled = jit::create_item_compiled_from_item(
-          jit_execution_context, right_item);
+          thd, jit_execution_context, right_item);
       // *(&right_item) = *right_child_compiled;
       items.push_back(right_child_compiled);
     } else {
@@ -53,7 +53,7 @@ void compile_children(THD *thd, jit::JITExecutionContext *jit_execution_context,
       if (items != nullptr && items[0] != nullptr &&
           items[0]->can_compile_result) {
         Item_compiled *left_child_compiled =
-            jit::create_item_compiled_from_item(jit_execution_context,
+            jit::create_item_compiled_from_item(thd, jit_execution_context,
                                                 item_func_eq->arguments()[0]);
         item_func_eq->set_arg(thd, 0, left_child_compiled);
       } else {
@@ -65,7 +65,7 @@ void compile_children(THD *thd, jit::JITExecutionContext *jit_execution_context,
       if (items != nullptr && items[1] != nullptr &&
           items[1]->can_compile_result) {
         Item_compiled *right_child_compiled =
-            jit::create_item_compiled_from_item(jit_execution_context,
+            jit::create_item_compiled_from_item(thd, jit_execution_context,
                                                 item_func_eq->arguments()[1]);
         item_func_eq->set_arg(thd, 1, right_child_compiled);
       } else {

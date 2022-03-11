@@ -8,8 +8,8 @@
 #include "sql/jit/item_compiled.h"
 #include "string"
 
-#include "sql/sql_class.h"
 #include "sql/current_thd.h"
+#include "sql/sql_class.h"
 
 #include "llvm/ExecutionEngine/Orc/ThreadSafeModule.h"
 #include "llvm/IR/Argument.h"

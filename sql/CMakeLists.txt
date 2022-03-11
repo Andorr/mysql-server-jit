@@ -467,6 +467,7 @@ SET(SQL_SHARED_SOURCES
   jit/codegen/jit_item_func_cmp.cc
   jit/item_compile_children.cc
   jit/item_compiled.cc
+  jit/jit_current_exec_ctx.cc
   join_optimizer/access_path.cc
   join_optimizer/build_interesting_orders.cc
   join_optimizer/common_subexpression_elimination.cc

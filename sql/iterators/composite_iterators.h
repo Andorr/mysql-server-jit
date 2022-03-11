@@ -59,8 +59,6 @@
 #include "sql/table.h"
 #include "sql_string.h"
 
-#include "sql/jit/jit_filter_iterator.h"
-
 class Cached_item;
 class FollowTailIterator;
 class Item;
@@ -79,15 +77,14 @@ class Temp_table_param;
  */
 class FilterIterator final : public RowIterator {
  public:
+  unique_ptr_destroy_only<RowIterator> m_source;
   Item *m_condition;
+
   FilterIterator(THD *thd, unique_ptr_destroy_only<RowIterator> source,
                  Item *condition)
       : RowIterator(thd), m_source(move(source)), m_condition(condition) {}
 
-  bool Init() override {
-    jit::compile_filter_iterator(this);
-    return m_source->Init();
-  }
+  bool Init() override { return m_source->Init(); }
 
   int Read() override;
 
@@ -100,9 +97,6 @@ class FilterIterator final : public RowIterator {
     m_source->EndPSIBatchModeIfStarted();
   }
   void UnlockRow() override { m_source->UnlockRow(); }
-
- private:
-  unique_ptr_destroy_only<RowIterator> m_source;
 
   // COMPILABLE ADD SUPPORT FOR TIMING IN FILTERITERATOR, SAME CODE AS USED IN
   // TIMINGITERATOR

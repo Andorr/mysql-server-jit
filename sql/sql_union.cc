@@ -97,6 +97,7 @@
 
 #include "sql/jit/item_compile_children.h"
 #include "sql/jit/jit.h"
+#include "sql/jit/jit_current_exec_ctx.h"
 
 using std::move;
 using std::vector;
@@ -1401,6 +1402,12 @@ void Query_expression::cleanup(THD *thd, bool full) {
     explain_marker is (mostly) a property determined at prepare time and must
     thus be preserved for the next execution, if this is a prepared statement.
   */
+
+  // COMPILABLE - release execution context
+  if (jit::current_exec_ctx != nullptr) {
+    delete jit::current_exec_ctx;
+    jit::current_exec_ctx = nullptr;
+  }
 }
 
 void Query_expression::destroy() {

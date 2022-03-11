@@ -56,6 +56,8 @@
 #include "sql/window.h"
 #include "template_utils.h"
 
+#include "sql/jit/jit_filter_iterator.h"
+
 /**
   Replaces field references in an ON DUPLICATE KEY UPDATE clause with references
   to corresponding fields in a temporary table. The changes will be rolled back
@@ -607,9 +609,14 @@ bool FinalizePlanForQueryBlock(THD *thd, Query_block *query_block,
           }
           after_aggregation = true;
         }
+
         if (AddCachesAroundConstantConditionsInPath(path)) {
           error = true;
           return true;
+        }
+
+        if (path->type == AccessPath::FILTER) {
+          jit::compile_filter_iterator(path);
         }
         return false;
       },

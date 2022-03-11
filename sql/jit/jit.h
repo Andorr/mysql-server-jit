@@ -31,7 +31,8 @@ class Item;
 namespace jit {
 
 std::unique_ptr<JITExecutionContext> new_jit_exec_ctx();
-Item_compiled *create_item_compiled_from_item(JITExecutionContext *jit_exec_ctx,
+Item_compiled *create_item_compiled_from_item(THD *thd,
+                                              JITExecutionContext *jit_exec_ctx,
                                               Item *item);
 
 void initialize();

@@ -5,6 +5,7 @@
 
 #include "sql/current_thd.h"
 #include "sql/iterators/composite_iterators.h"
+#include "sql/join_optimizer/access_path.h"
 #include "sql/sql_base.h"
 
 #include "sql/item.h"
@@ -16,6 +17,7 @@
 #include "sql/jit/item_compiled.h"
 #include "sql/jit/jit.h"
 #include "sql/jit/jit_common.h"
+#include "sql/jit/jit_current_exec_ctx.h"
 #include "sql/jit/jit_exec_ctx.h"
 #include "sql/jit/jit_filter_iterator.h"
 
@@ -26,8 +28,9 @@ std::unique_ptr<JITExecutionContext> jit::new_jit_exec_ctx() {
 }
 
 Item_compiled *jit::create_item_compiled_from_item(
-    JITExecutionContext *jit_exec_ctx, Item *item) {
-  Item_compiled *compiled = new Item_compiled(jit_exec_ctx, item);
+    THD *thd, JITExecutionContext *jit_exec_ctx, Item *item) {
+  Item_compiled *compiled =
+      new (thd->mem_root) Item_compiled(jit_exec_ctx, item);
   compiled->codegen_item();
   // compiled->print_ir();
   compiled->jit_compile(jit_exec_ctx);
@@ -44,7 +47,7 @@ void jit::initialize() {
 
 bool jit::initialized = false;
 
-void jit::compile_filter_iterator(FilterIterator *iterator) {
+void jit::compile_filter_iterator(AccessPath *path) {
   // COMPILABLE CAN COMPILE HERE?????
   // Check if can compile before setting condition
   // fprintf(stderr, "CHECKING IF SHOULD COMPILE: %d\n",
@@ -57,17 +60,23 @@ void jit::compile_filter_iterator(FilterIterator *iterator) {
       jit::initialize();
     }
 
-    auto *jit_ctx = jit::new_jit_exec_ctx().release();
+    if (current_exec_ctx == nullptr) {
+      current_exec_ctx = jit::new_jit_exec_ctx().release();
+    }
 
-    iterator->m_condition->can_compile();
-    if (iterator->m_condition->can_compile_result) {
+    auto condition = path->filter().condition;
+
+    condition->can_compile();
+    if (condition->can_compile_result) {
       // The entire where_cond item can be replaced by a Item_compiled
       // *replace where_cond with new item_compiled*
-      Item_compiled *where_cond_compiled =
-          jit::create_item_compiled_from_item(jit_ctx, iterator->m_condition);
-      iterator->m_condition = where_cond_compiled;
+      Item_compiled *where_cond_compiled = jit::create_item_compiled_from_item(
+          cur_thd, current_exec_ctx, condition);
+      path->filter().condition = where_cond_compiled;
     } else {
-      compile_children(cur_thd, jit_ctx, iterator->m_condition);
+      compile_children(cur_thd, current_exec_ctx, condition);
     }
+
+    // delete jit_ctx;
   }
 }
