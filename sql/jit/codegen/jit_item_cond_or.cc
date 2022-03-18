@@ -50,6 +50,8 @@ llvm::Value *codegen_item_cond_and(Item_cond_and *item,
   llvm::Value *output = nullptr;
   if (list_count == 1) {
     output = jit::codegen_item(list[0], context);
+    output = context->builder->CreateIntCast(
+        output, llvm::Type::getInt64Ty(*context->context), false, "cast");
   } else {
     llvm::Function *func = context->builder->GetInsertBlock()->getParent();
 
@@ -62,23 +64,27 @@ llvm::Value *codegen_item_cond_and(Item_cond_and *item,
     basic_blocks.push_back(context->builder->GetInsertBlock());
 
     for (uint i = 0; i < list_count; i++) {
-      llvm::BasicBlock *then_bb =
-          llvm::BasicBlock::Create(*context->context, "then");
       llvm::Value *then_v = jit::codegen_item(list[i], context);
       if (then_v == nullptr) {
         return nullptr;
       }
+
+      llvm::BasicBlock *then_bb =
+          llvm::BasicBlock::Create(*context->context, "then");
 
       // context->builder->CreateCondBr(then_v, then_bb, end_bb);
 
       if (i == list_count - 1) {
         context->builder->CreateBr(end_bb);
         block_values.push_back(then_v);
+        basic_blocks[basic_blocks.size() - 1] =
+            context->builder->GetInsertBlock();
         // basic_blocks.push_back(end_bb);
       } else {
         context->builder->CreateCondBr(then_v, then_bb, end_bb);
         func->getBasicBlockList().push_back(then_bb);
         context->builder->SetInsertPoint(then_bb);
+
         basic_blocks.push_back(then_bb);
         block_values.push_back(llvm::ConstantInt::get(
             *context->context, llvm::APInt(64, 0, true)));
