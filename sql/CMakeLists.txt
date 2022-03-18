@@ -936,7 +936,7 @@ ADD_DEPENDENCIES(sql_main GenDigestServerSource)
 ADD_DEPENDENCIES(sql_main GenBootstrapPriv)
 ADD_DEPENDENCIES(sql_main GenSysSchema)
 TARGET_LINK_LIBRARIES(sql_main ${MYSQLD_STATIC_PLUGIN_LIBS}
-  mysql_server_component_services mysys strings vio ${LLVM_LIBS}
+  mysql_server_component_services mysys strings vio LLVM
   binlogevents_static ${LIBWRAP} ${LIBDL} ${SSL_LIBRARIES})
 
 # sql/immutable_string.h uses

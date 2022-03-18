@@ -72,6 +72,10 @@ class JITExecutionContext {
   Error add_module(ThreadSafeModule tsm);
 
   Expected<JITEvaluatedSymbol> lookup(StringRef name);
+
+  void print() {
+    // this->main_jd.
+  }
 };
 }  // namespace jit
 
