@@ -25,8 +25,6 @@ llvm::Value *codegen_item_cond_or(Item_cond_or *item,
     std::vector<llvm::BasicBlock *> basic_blocks;
     std::vector<llvm::Value *> block_values;
 
-    llvm::BasicBlock *cur_bb = context->builder->GetInsertBlock();
-
     for (uint i = 0; i < list_count; i++) {
       llvm::Value *else_v = jit::codegen_item(list[i], context);
       if (else_v == nullptr) {
@@ -91,8 +89,6 @@ llvm::Value *codegen_item_cond_and(Item_cond_and *item,
     std::vector<llvm::BasicBlock *> basic_blocks;
     std::vector<llvm::Value *> block_values;
 
-    basic_blocks.push_back(context->builder->GetInsertBlock());
-
     for (uint i = 0; i < list_count; i++) {
       llvm::Value *then_v = jit::codegen_item(list[i], context);
       if (then_v == nullptr) {
@@ -107,15 +103,15 @@ llvm::Value *codegen_item_cond_and(Item_cond_and *item,
       if (i == list_count - 1) {
         context->builder->CreateBr(end_bb);
         block_values.push_back(then_v);
-        basic_blocks[basic_blocks.size() - 1] =
-            context->builder->GetInsertBlock();
+        basic_blocks.push_back(context->builder->GetInsertBlock());
         // basic_blocks.push_back(end_bb);
       } else {
         context->builder->CreateCondBr(then_v, then_bb, end_bb);
+        basic_blocks.push_back(context->builder->GetInsertBlock());
+
         func->getBasicBlockList().push_back(then_bb);
         context->builder->SetInsertPoint(then_bb);
 
-        basic_blocks.push_back(then_bb);
         block_values.push_back(llvm::ConstantInt::get(
             *context->context, llvm::APInt(64, 0, true)));
       }

@@ -418,11 +418,13 @@ TEST_F(JITItemCompiledTests, CompileItemCondOrAnd) {
   ASSERT_TRUE(jit_exec_ctx != nullptr);
 
   const char *str_a = "Hello";
-  const char *str_b = "Helld";
+  const char *str_b = "Hello";
   const char *str_c = "Hello world! :D";
   const char *str_d = "Hello world! ::";
   const char *str_e = "Hello world! :D :D";
   const char *str_f = "Hello world! :D :D";
+  const char *str_g = "Yes, great one. I am the summoner.";
+  const char *str_h = "Yes, great one. I am the summoner.";
 
   Item *item_str_a = new Item_string(str_a, 5, &my_charset_utf8mb4_general_ci);
   Item *item_str_b = new Item_string(str_b, 5, &my_charset_utf8mb4_general_ci);
@@ -430,18 +432,24 @@ TEST_F(JITItemCompiledTests, CompileItemCondOrAnd) {
   Item *item_str_d = new Item_string(str_d, 15, &my_charset_utf8mb4_general_ci);
   Item *item_str_e = new Item_string(str_e, 18, &my_charset_utf8mb4_general_ci);
   Item *item_str_f = new Item_string(str_f, 18, &my_charset_utf8mb4_general_ci);
+  Item *item_str_g = new Item_string(str_g, 34, &my_charset_utf8mb4_general_ci);
+  Item *item_str_h = new Item_string(str_h, 34, &my_charset_utf8mb4_general_ci);
 
-  Item *item_eq_a = new Item_func_eq(item_str_a, item_str_c);
+  Item *item_eq_a = new Item_func_eq(item_str_a, item_str_b);
   Item *item_eq_b = new Item_func_eq(item_str_c, item_str_d);
   Item *item_eq_c = new Item_func_eq(item_str_e, item_str_f);
   Item *item_eq_d = new Item_func_eq(item_str_e, item_str_f);
+  Item *item_eq_e = new Item_func_eq(item_str_g, item_str_h);
 
   Item *item_or_a = new Item_cond_or(item_eq_b, item_eq_c);
-  Item *item_or_b = new Item_cond_or(item_eq_a, item_or_a);
-  Item *item_and = new Item_cond_and(item_eq_d, item_or_b);
+  Item_cond_and *item_and = new Item_cond_and(item_eq_a, item_or_a);
+  item_and->add(item_eq_d);
+  item_and->add(item_eq_e);
 
-  item_and->fix_fields(thd(), &item_and);
-  Item_compiled *item = new Item_compiled(jit_exec_ctx.get(), item_and);
+  Item *item_query = static_cast<Item *>(item_and);
+
+  item_query->fix_fields(thd(), &item_query);
+  Item_compiled *item = new Item_compiled(jit_exec_ctx.get(), item_query);
 
   item->codegen_item();
   item->print_ir();
