@@ -56,7 +56,7 @@ class Item_compiled : public Item {
 
   void codegen_item();
 
-  void jit_compile(jit::JITExecutionContext *exec_ctx);
+  void jit_compile(jit::JITExecutionContext *exec_ctx, bool optimize);
 
   void print_ir();
 

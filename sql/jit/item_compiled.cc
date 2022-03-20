@@ -56,7 +56,8 @@ void Item_compiled::codegen_item() {
   }
 }
 
-void Item_compiled::jit_compile(jit::JITExecutionContext *exec_ctx) {
+void Item_compiled::jit_compile(jit::JITExecutionContext *exec_ctx,
+                                bool optimize) {
   // COMPILABLEC COMPILE TIME TIMETAKING
   steady_clock::time_point start;
   steady_clock::time_point end;
@@ -64,6 +65,14 @@ void Item_compiled::jit_compile(jit::JITExecutionContext *exec_ctx) {
   llvm::ExitOnError exit_on_err;
   auto TSM = llvm::orc::ThreadSafeModule(std::move(builder_ctx->func_module),
                                          std::move(builder_ctx->context));
+
+  if (optimize) {
+    // auto optTSM =
+    //     exit_on_err(exec_ctx->optimizeModuleWithoutMR(std::move(TSM)));
+    // optTSM.withModuleDo(
+    //     [](llvm::Module &m) { m.print(llvm::errs(), nullptr); });
+    TSM = exit_on_err(exec_ctx->optimizeModuleWithoutMR(std::move(TSM)));
+  }
 
   // TODO: Replace exit_on_err with better error-handling
   if (auto err = exec_ctx->add_module(std::move(TSM))) {

@@ -73,9 +73,12 @@ class JITExecutionContext {
 
   Expected<JITEvaluatedSymbol> lookup(StringRef name);
 
-  void print() {
-    // this->main_jd.
-  }
+  static llvm::Expected<llvm::orc::ThreadSafeModule> optimizeModule(
+      llvm::orc::ThreadSafeModule tsm,
+      const llvm::orc::MaterializationResponsibility &r);
+
+  static llvm::Expected<llvm::orc::ThreadSafeModule> optimizeModuleWithoutMR(
+      llvm::orc::ThreadSafeModule tsm);
 };
 }  // namespace jit
 

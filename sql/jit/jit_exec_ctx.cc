@@ -4,11 +4,20 @@
 
 #include "llvm/ADT/StringRef.h"
 #include "llvm/IR/IRBuilder.h"
+#include "llvm/IR/LegacyPassManager.h"
 #include "llvm/IR/PassManager.h"
 #include "llvm/IR/Value.h"
 
 #include "jit_common.h"
 #include "jit_exec_ctx.h"
+
+#include "llvm/Transforms/IPO.h"
+#include "llvm/Transforms/IPO/StripDeadPrototypes.h"
+#include "llvm/Transforms/InstCombine/InstCombine.h"
+#include "llvm/Transforms/Scalar.h"
+#include "llvm/Transforms/Scalar/ADCE.h"
+#include "llvm/Transforms/Scalar/GVN.h"
+#include "llvm/Transforms/Utils.h"
 
 using namespace jit;
 
@@ -58,4 +67,48 @@ Error JITExecutionContext::add_module(ThreadSafeModule tsm) {
 
 Expected<JITEvaluatedSymbol> JITExecutionContext::lookup(StringRef name) {
   return exec_session->lookup({&main_jd}, mangle(name.str()));
+}
+
+llvm::Expected<llvm::orc::ThreadSafeModule> JITExecutionContext::optimizeModule(
+    llvm::orc::ThreadSafeModule tsm,
+    const llvm::orc::MaterializationResponsibility &r) {
+  return optimizeModuleWithoutMR(std::move(tsm));
+}
+
+llvm::Expected<llvm::orc::ThreadSafeModule>
+JITExecutionContext::optimizeModuleWithoutMR(llvm::orc::ThreadSafeModule tsm) {
+  tsm.withModuleDo([](llvm::Module &m) {
+    // Create a function pass manager
+    auto pm = std::make_unique<llvm::legacy::PassManager>();
+
+    // Add some optimizations
+    pm->add(llvm::createInstructionCombiningPass());
+    pm->add(llvm::createReassociatePass());
+    pm->add(llvm::createNewGVNPass());
+    pm->add(llvm::createCFGSimplificationPass());
+    auto inlinePass = llvm::createFunctionInliningPass();
+
+    pm->add(inlinePass);
+    pm->add(llvm::createAggressiveDCEPass());
+    pm->add(llvm::createStripDeadPrototypesPass());
+    pm->run(m);
+
+    auto fpm = std::make_unique<llvm::legacy::FunctionPassManager>(&m);
+
+    // Add some optimizations
+    fpm->add(llvm::createInstructionCombiningPass());
+    fpm->add(llvm::createReassociatePass());
+    fpm->add(llvm::createNewGVNPass());
+    fpm->add(llvm::createCFGSimplificationPass());
+    // fpm->add(llvm::createAggressiveDCEPass());
+    // fpm->add(llvm::createStripDeadPrototypesPass());
+
+    fpm->doInitialization();
+
+    for (auto &F : m) {
+      fpm->run(F);
+    }
+  });
+
+  return std::move(tsm);
 }

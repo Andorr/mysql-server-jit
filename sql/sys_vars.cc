@@ -2952,28 +2952,31 @@ static Sys_var_ulong Sys_max_points_in_geometry(
 
 // COMPILABLE SHOULD JIT COMPILE TOGGLE FLAG
 static Sys_var_bool Sys_should_jit_compile(
-  "should_jit_compile", "Enable JIT compiling of queries",
-  HINT_UPDATEABLE SESSION_VAR(should_jit_compile), CMD_LINE(OPT_ARG),
-  DEFAULT(false)
-);
+    "should_jit_compile", "Enable JIT compiling of queries",
+    HINT_UPDATEABLE SESSION_VAR(should_jit_compile), CMD_LINE(OPT_ARG),
+    DEFAULT(false));
+
+static Sys_var_bool Sys_should_jit_optimize(
+    "should_jit_optimize",
+    "Enable JIT optimizations during compilation of queries",
+    HINT_UPDATEABLE SESSION_VAR(should_jit_optimize), CMD_LINE(OPT_ARG),
+    DEFAULT(false));
 // COMPILABLE SHOULD TIME COMPILE
 static Sys_var_bool Sys_should_time_compile_time(
-  "should_time_compile_time", "Enable timing of compilation",
-  HINT_UPDATEABLE SESSION_VAR(should_time_compile_time), CMD_LINE(OPT_ARG),
-  DEFAULT(false)
-);
+    "should_time_compile_time", "Enable timing of compilation",
+    HINT_UPDATEABLE SESSION_VAR(should_time_compile_time), CMD_LINE(OPT_ARG),
+    DEFAULT(false));
 // COMPILABLE SHOULD JIT COMPILE TOGGLE FLAG
 static Sys_var_bool Sys_should_time_val_int_call(
-  "should_time_val_int_call", "Enable timing of compilation",
-  HINT_UPDATEABLE SESSION_VAR(should_time_val_int_call), CMD_LINE(OPT_ARG),
-  DEFAULT(false)
-);
+    "should_time_val_int_call", "Enable timing of compilation",
+    HINT_UPDATEABLE SESSION_VAR(should_time_val_int_call), CMD_LINE(OPT_ARG),
+    DEFAULT(false));
 // COMPILABLE SHOULD JIT COMPILE TOGGLE FLAG
 static Sys_var_bool Sys_should_count_instructions(
-  "should_count_instructions", "Enable counting of instructions of rowiterator::read",
-  HINT_UPDATEABLE SESSION_VAR(should_count_instructions), CMD_LINE(OPT_ARG),
-  DEFAULT(false)
-);
+    "should_count_instructions",
+    "Enable counting of instructions of rowiterator::read",
+    HINT_UPDATEABLE SESSION_VAR(should_count_instructions), CMD_LINE(OPT_ARG),
+    DEFAULT(false));
 
 static PolyLock_mutex PLock_prepared_stmt_count(&LOCK_prepared_stmt_count);
 

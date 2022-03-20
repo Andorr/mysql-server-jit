@@ -49,7 +49,7 @@ TEST_F(JITItemCompiledTests, CompileItemInt) {
   Item_compiled *item = new Item_compiled(jit_exec_ctx.get(), a);
 
   item->codegen_item();
-  item->jit_compile(jit_exec_ctx.get());
+  item->jit_compile(jit_exec_ctx.get(), false);
   auto result = item->val_int();
   ASSERT_TRUE(result == 7);
 };
@@ -64,7 +64,7 @@ TEST_F(JITItemCompiledTests, CompileItemFuncEq) {
   Item_compiled *item = new Item_compiled(jit_exec_ctx.get(), c);
 
   item->codegen_item();
-  item->jit_compile(jit_exec_ctx.get());
+  item->jit_compile(jit_exec_ctx.get(), false);
   auto result = item->val_int();
   ASSERT_TRUE(result == 0);
 };
@@ -84,7 +84,7 @@ TEST_F(JITItemCompiledTests, CompileItemFieldOnly) {
   Item_compiled *item = new Item_compiled(jit_exec_ctx.get(), b);
 
   item->codegen_item();
-  item->jit_compile(jit_exec_ctx.get());
+  item->jit_compile(jit_exec_ctx.get(), false);
   auto result = item->val_int();
   ASSERT_EQ(result, value);
 
@@ -111,7 +111,7 @@ TEST_F(JITItemCompiledTests, CompileItemField) {
   Item_compiled *item = new Item_compiled(jit_exec_ctx.get(), c);
 
   item->codegen_item();
-  item->jit_compile(jit_exec_ctx.get());
+  item->jit_compile(jit_exec_ctx.get(), false);
   auto result = item->val_int();
   ASSERT_EQ(result, 1);
 };
@@ -127,7 +127,7 @@ TEST_F(JITItemCompiledTests, CompileItemFuncGE) {
   Item_compiled *item = new Item_compiled(jit_exec_ctx.get(), c);
 
   item->codegen_item();
-  item->jit_compile(jit_exec_ctx.get());
+  item->jit_compile(jit_exec_ctx.get(), false);
   auto result = item->val_int();
   ASSERT_EQ(result, 1);
 
@@ -137,7 +137,7 @@ TEST_F(JITItemCompiledTests, CompileItemFuncGE) {
   item = new Item_compiled(jit_exec_ctx.get(), f);
 
   item->codegen_item();
-  item->jit_compile(jit_exec_ctx.get());
+  item->jit_compile(jit_exec_ctx.get(), false);
   result = item->val_int();
   ASSERT_EQ(result, 1);
 
@@ -147,7 +147,7 @@ TEST_F(JITItemCompiledTests, CompileItemFuncGE) {
   item = new Item_compiled(jit_exec_ctx.get(), i);
 
   item->codegen_item();
-  item->jit_compile(jit_exec_ctx.get());
+  item->jit_compile(jit_exec_ctx.get(), false);
   result = item->val_int();
   ASSERT_EQ(result, 0);
 };
@@ -163,7 +163,7 @@ TEST_F(JITItemCompiledTests, CompileItemFuncLE) {
   Item_compiled *item = new Item_compiled(jit_exec_ctx.get(), c);
 
   item->codegen_item();
-  item->jit_compile(jit_exec_ctx.get());
+  item->jit_compile(jit_exec_ctx.get(), false);
   auto result = item->val_int();
   ASSERT_EQ(result, 0);
 
@@ -173,7 +173,7 @@ TEST_F(JITItemCompiledTests, CompileItemFuncLE) {
   item = new Item_compiled(jit_exec_ctx.get(), f);
 
   item->codegen_item();
-  item->jit_compile(jit_exec_ctx.get());
+  item->jit_compile(jit_exec_ctx.get(), false);
   result = item->val_int();
   ASSERT_EQ(result, 1);
 
@@ -183,7 +183,7 @@ TEST_F(JITItemCompiledTests, CompileItemFuncLE) {
   item = new Item_compiled(jit_exec_ctx.get(), i);
 
   item->codegen_item();
-  item->jit_compile(jit_exec_ctx.get());
+  item->jit_compile(jit_exec_ctx.get(), false);
   result = item->val_int();
   ASSERT_EQ(result, 1);
 };
@@ -201,7 +201,7 @@ TEST_F(JITItemCompiledTests, CompileItemFuncBetween) {
   Item_compiled *item = new Item_compiled(jit_exec_ctx.get(), between_a);
 
   item->codegen_item();
-  item->jit_compile(jit_exec_ctx.get());
+  item->jit_compile(jit_exec_ctx.get(), false);
   auto result = item->val_int();
   ASSERT_EQ(result, 1);
 
@@ -209,7 +209,7 @@ TEST_F(JITItemCompiledTests, CompileItemFuncBetween) {
   item = new Item_compiled(jit_exec_ctx.get(), between_b);
 
   item->codegen_item();
-  item->jit_compile(jit_exec_ctx.get());
+  item->jit_compile(jit_exec_ctx.get(), false);
   result = item->val_int();
   ASSERT_EQ(result, 1);
 
@@ -217,7 +217,7 @@ TEST_F(JITItemCompiledTests, CompileItemFuncBetween) {
   item = new Item_compiled(jit_exec_ctx.get(), i);
 
   item->codegen_item();
-  item->jit_compile(jit_exec_ctx.get());
+  item->jit_compile(jit_exec_ctx.get(), false);
   result = item->val_int();
   ASSERT_EQ(result, 0);
 };
@@ -238,7 +238,7 @@ TEST_F(JITItemCompiledTests, CompileItemString) {
   Item_compiled *item = new Item_compiled(jit_exec_ctx.get(), item_eq_a);
 
   item->codegen_item();
-  item->jit_compile(jit_exec_ctx.get());
+  item->jit_compile(jit_exec_ctx.get(), false);
   auto result = item->val_int();
   ASSERT_EQ(result, 1);
 
@@ -247,7 +247,7 @@ TEST_F(JITItemCompiledTests, CompileItemString) {
   item = new Item_compiled(jit_exec_ctx.get(), item_eq_b);
 
   item->codegen_item();
-  item->jit_compile(jit_exec_ctx.get());
+  item->jit_compile(jit_exec_ctx.get(), false);
   result = item->val_int();
   ASSERT_EQ(result, 0);
 }
@@ -270,7 +270,7 @@ TEST_F(JITItemCompiledTests, CompileItemFuncLike) {
   Item_compiled *item = new Item_compiled(jit_exec_ctx.get(), item_like_a);
 
   item->codegen_item();
-  item->jit_compile(jit_exec_ctx.get());
+  item->jit_compile(jit_exec_ctx.get(), false);
   auto result = item->val_int();
   ASSERT_EQ(result, 1);
 
@@ -280,7 +280,7 @@ TEST_F(JITItemCompiledTests, CompileItemFuncLike) {
 
   item->codegen_item();
   item->print_ir();
-  item->jit_compile(jit_exec_ctx.get());
+  item->jit_compile(jit_exec_ctx.get(), false);
   result = item->val_int();
   ASSERT_EQ(result, 1);
 
@@ -290,7 +290,7 @@ TEST_F(JITItemCompiledTests, CompileItemFuncLike) {
 
   item->codegen_item();
   item->print_ir();
-  item->jit_compile(jit_exec_ctx.get());
+  item->jit_compile(jit_exec_ctx.get(), false);
   result = item->val_int();
   ASSERT_EQ(result, 0);
 }
@@ -312,7 +312,7 @@ TEST_F(JITItemCompiledTests, CompileItemFuncNe) {
 
   item->codegen_item();
   item->print_ir();
-  item->jit_compile(jit_exec_ctx.get());
+  item->jit_compile(jit_exec_ctx.get(), false);
   auto result = item->val_int();
   ASSERT_EQ(result, 1);
 
@@ -322,7 +322,7 @@ TEST_F(JITItemCompiledTests, CompileItemFuncNe) {
 
   item->codegen_item();
   item->print_ir();
-  item->jit_compile(jit_exec_ctx.get());
+  item->jit_compile(jit_exec_ctx.get(), false);
   result = item->val_int();
   ASSERT_EQ(result, 0);
 }
@@ -340,7 +340,7 @@ TEST_F(JITItemCompiledTests, CompileItemFuncNot) {
 
   item->codegen_item();
   item->print_ir();
-  item->jit_compile(jit_exec_ctx.get());
+  item->jit_compile(jit_exec_ctx.get(), false);
   auto result = item->val_int();
   ASSERT_EQ(result, 0);
 }
@@ -374,7 +374,7 @@ TEST_F(JITItemCompiledTests, CompileItemCondAnd) {
 
   item->codegen_item();
   item->print_ir();
-  item->jit_compile(jit_exec_ctx.get());
+  item->jit_compile(jit_exec_ctx.get(), false);
   auto result = item->val_int();
   ASSERT_EQ(result, 0);
 }
@@ -408,7 +408,7 @@ TEST_F(JITItemCompiledTests, CompileItemCondOr) {
 
   item->codegen_item();
   item->print_ir();
-  item->jit_compile(jit_exec_ctx.get());
+  item->jit_compile(jit_exec_ctx.get(), false);
   auto result = item->val_int();
   ASSERT_EQ(result, 1);
 }
@@ -453,7 +453,7 @@ TEST_F(JITItemCompiledTests, CompileItemCondOrAnd) {
 
   item->codegen_item();
   item->print_ir();
-  item->jit_compile(jit_exec_ctx.get());
+  item->jit_compile(jit_exec_ctx.get(), true);
   auto result = item->val_int();
   ASSERT_EQ(result, 1);
 }
