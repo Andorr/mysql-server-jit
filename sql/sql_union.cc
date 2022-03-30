@@ -858,7 +858,7 @@ bool Query_expression::optimize(THD *thd, TABLE *materialize_destination,
       }
     }
 
-    if (true) {
+    if (false) {
       // This can be useful during debugging.
       bool is_root_of_join = (join != nullptr);
       fprintf(
