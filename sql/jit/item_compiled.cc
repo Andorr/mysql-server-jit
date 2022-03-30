@@ -134,6 +134,8 @@ void Item_compiled::print(const THD *thd, String *str,
   this->item->print(thd, str, query_type);
 }
 
+bool Item_compiled::is_expensive() { return this->item->is_expensive(); }
+
 std::string gen_random(const int len) {
   static const char alphanum[] =
       "0123456789"

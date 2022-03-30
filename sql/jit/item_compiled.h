@@ -60,6 +60,8 @@ class Item_compiled : public Item {
 
   void print_ir();
 
+  bool is_expensive() override;
+
   longlong val_int() override;
 
   virtual double val_real() override { return 0.0; }
