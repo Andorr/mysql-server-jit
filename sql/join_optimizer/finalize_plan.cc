@@ -56,7 +56,7 @@
 #include "sql/window.h"
 #include "template_utils.h"
 
-#include "sql/jit/jit_filter_iterator.h"
+// #include "sql/jit/jit_filter_iterator.h"
 
 /**
   Replaces field references in an ON DUPLICATE KEY UPDATE clause with references
@@ -615,9 +615,9 @@ bool FinalizePlanForQueryBlock(THD *thd, Query_block *query_block,
           return true;
         }
 
-        if (path->type == AccessPath::FILTER) {
+        /* if (path->type == AccessPath::FILTER) {
           jit::compile_filter_iterator(path);
-        }
+        } */
         return false;
       },
       /*post_order_traversal=*/true);

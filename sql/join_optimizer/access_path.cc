@@ -52,6 +52,8 @@
 
 #include <vector>
 
+#include "sql/jit/jit_filter_iterator.h"
+
 using pack_rows::TableCollection;
 using std::vector;
 
@@ -621,11 +623,13 @@ unique_ptr_destroy_only<RowIterator> CreateIteratorFromAccessPath(
     }
     case AccessPath::FILTER: {
       const auto &param = path->filter();
+      jit::compile_filter_iterator(path);
       unique_ptr_destroy_only<RowIterator> child = CreateIteratorFromAccessPath(
           thd, mem_root, param.child, join, eligible_for_batch_mode);
       if (child == nullptr) {
         return nullptr;
       }
+
       iterator = NewIterator<FilterIterator>(thd, mem_root, move(child),
                                              param.condition);
       break;
