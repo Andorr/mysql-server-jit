@@ -63,10 +63,25 @@
 #include "sql/window.h"
 #include "template_utils.h"
 
+#include "sql/benchmark/benchmark.h"
+
 using pack_rows::TableCollection;
 using std::string;
 using std::swap;
 using std::vector;
+
+bool FilterIterator::Init() {
+  if (current_thd->variables.should_count_instructions) {
+    instruction_fd = benchmark::perf_init();
+  }
+  return m_source->Init();
+}
+
+FilterIterator::~FilterIterator() {
+  if (current_thd->variables.should_count_instructions) {
+    close(instruction_fd);
+  }
+}
 
 int FilterIterator::Read() {
   for (;;) {
@@ -77,9 +92,16 @@ int FilterIterator::Read() {
     steady_clock::time_point start;
     steady_clock::time_point end;
     if (current_thd->variables.should_time_val_int_call) {
-       start = now();
+      start = now();
+    }
+    if (current_thd->variables.should_count_instructions) {
+      benchmark::perf_start(instruction_fd);
     }
     bool matched = m_condition->val_int();
+    if (current_thd->variables.should_count_instructions) {
+      benchmark::perf_stop(instruction_fd);
+      instruction_count += benchmark::perf_read(instruction_fd);
+    }
     if (current_thd->variables.should_time_val_int_call) {
       end = now();
       time_spent_on_val_int_calls += end - start;
@@ -130,7 +152,8 @@ int LimitOffsetIterator::Read() {
       //      OFFSET rows, and
       //   b) we don't inadvertedly enable batch mode (e.g. through the
       //      NestedLoopIterator) during Init(), since the executor may not
-      //      be ready to _disable_ it if it gets an error before first Read().
+      //      be ready to _disable_ it if it gets an error before first
+      //      Read().
       for (ha_rows row_idx = 0; row_idx < m_offset; ++row_idx) {
         int err = m_source->Read();
         if (err != 0) {
@@ -207,12 +230,12 @@ bool AggregateIterator::Init() {
   // of the slice we're in (unless we're in the hypergraph optimizer, which
   // doesn't use slices). However, we might have a sort before us, and
   // SortingIterator doesn't set the slice except on Init(); it just keeps
-  // whatever was already set. When there is a temporary table after the HAVING,
-  // the slice coming from there might be wrongly set on Read(), and thus,
-  // we need to properly restore it before returning any rows.
+  // whatever was already set. When there is a temporary table after the
+  // HAVING, the slice coming from there might be wrongly set on Read(), and
+  // thus, we need to properly restore it before returning any rows.
   //
-  // This is a hack. It would be good to get rid of the slice system altogether
-  // (the hypergraph join optimizer does not use it).
+  // This is a hack. It would be good to get rid of the slice system
+  // altogether (the hypergraph join optimizer does not use it).
   if (!(m_join->implicit_grouping || m_join->group_optimized_away) &&
       !thd()->lex->using_hypergraph_optimizer) {
     m_output_slice = m_join->get_ref_item_slice();
@@ -233,7 +256,8 @@ int AggregateIterator::Read() {
   switch (m_state) {
     case READING_FIRST_ROW: {
       // Start the first group, if possible. (If we're not at the first row,
-      // we already saw the first row in the new group at the previous Read().)
+      // we already saw the first row in the new group at the previous
+      // Read().)
       int err = m_source->Read();
       if (err == -1) {
         m_seen_eof = true;
@@ -263,7 +287,8 @@ int AggregateIterator::Read() {
           if (thd()->lex->using_hypergraph_optimizer) {
             // JOIN::clear_fields() depends on QEP_TABs, which we don't have.
             // However, there are no const tables to worry about in the
-            // hypergraph optimizer, so we don't need its special logic either.
+            // hypergraph optimizer, so we don't need its special logic
+            // either.
             m_source->SetNullRowFlag(true);
           } else {
             if (m_join->clear_fields(&m_save_nullinfo)) {
@@ -579,9 +604,9 @@ bool MaterializeIterator::Init() {
     }
   }
 
-  // If this is a CTE, it could be referred to multiple times in the same query.
-  // If so, check if we have already been materialized through any of our alias
-  // tables.
+  // If this is a CTE, it could be referred to multiple times in the same
+  // query. If so, check if we have already been materialized through any of
+  // our alias tables.
   if (!table()->materialized && m_cte != nullptr) {
     for (TABLE_LIST *table_ref : m_cte->tmp_tables) {
       if (table_ref->table != nullptr && table_ref->table->materialized) {
@@ -637,12 +662,11 @@ bool MaterializeIterator::Init() {
     // and assume that the CTE is outer-correlated. When EXISTS is
     // evaluated, Query_expression::ClearForExecution() calls
     // clear_correlated_query_blocks(), which scans the WITH clause and clears
-    // the CTE, including its references to itself in its recursive definition.
-    // But, if the query expression owning WITH is merged up, e.g. like this:
-    // FROM ot SEMIJOIN cte ON TRUE,
-    // then there is no Query_expression anymore, so its WITH clause is
-    // not reached. But this "lateral CTE" still needs comprehensive resetting.
-    // That's done here.
+    // the CTE, including its references to itself in its recursive
+    // definition. But, if the query expression owning WITH is merged up, e.g.
+    // like this: FROM ot SEMIJOIN cte ON TRUE, then there is no
+    // Query_expression anymore, so its WITH clause is not reached. But this
+    // "lateral CTE" still needs comprehensive resetting. That's done here.
     if (m_cte->clear_all_references()) return true;
   }
 
@@ -845,7 +869,8 @@ bool MaterializeIterator::MaterializeQueryBlock(const QueryBlock &query_block,
 
     // TODO(sgunders): Consider doing this in some iterator instead.
     if (join->m_windows.elements > 0 && !join->m_windowing_steps) {
-      // Initialize state of window functions as end_write_wf() will be shortcut
+      // Initialize state of window functions as end_write_wf() will be
+      // shortcut
       for (Window &w : join->m_windows) {
         w.reset_all_wf_state();
       }
@@ -1176,8 +1201,8 @@ bool TemptableAggregateIterator::Init() {
         }
         /*
           The key of the temporary table can be a hash of the group-by columns
-          or the group-by columns themselves. Find the row to be updated in the
-          newly created table.
+          or the group-by columns themselves. Find the row to be updated in
+          the newly created table.
         */
         const uchar *key;
         if (using_hash_key()) {
@@ -1258,9 +1283,9 @@ bool TemptableAggregateIterator::Init() {
          TIMESTAMP field, throw a meaningfull error to user with the actual
          reason and the workaround. I.e, "Grouping on temporal is
          non-deterministic for timezones having DST. Please consider switching
-         to UTC for this query". This is a temporary measure until we implement
-         WL#13148 (Do all internal handling TIMESTAMP in UTC timezone), which
-         will make such problem impossible.
+         to UTC for this query". This is a temporary measure until we
+         implement WL#13148 (Do all internal handling TIMESTAMP in UTC
+         timezone), which will make such problem impossible.
        */
       if (error == HA_ERR_FOUND_DUPP_KEY) {
         for (ORDER *group = table()->group; group; group = group->next) {

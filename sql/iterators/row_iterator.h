@@ -70,6 +70,8 @@ class RowIterator {
   // COMPILABLE TIMING AND COUNT VARIABLES USED IN FILTERITERATOR
   std::chrono::steady_clock::time_point::duration time_spent_on_val_int_calls{
       0};
+
+  int instruction_fd = 42069;
   uint64_t instruction_count = 0;
 
   RowIterator(const RowIterator &) = delete;

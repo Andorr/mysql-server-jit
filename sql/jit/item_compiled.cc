@@ -57,7 +57,7 @@ void Item_compiled::codegen_item() {
 }
 
 void Item_compiled::jit_compile(jit::JITExecutionContext *exec_ctx,
-                                bool optimize) {
+                                bool optimize, bool debug_print) {
   // COMPILABLEC COMPILE TIME TIMETAKING
   steady_clock::time_point start;
   steady_clock::time_point end;
@@ -67,11 +67,18 @@ void Item_compiled::jit_compile(jit::JITExecutionContext *exec_ctx,
                                          std::move(builder_ctx->context));
 
   if (optimize) {
-    // auto optTSM =
-    //     exit_on_err(exec_ctx->optimizeModuleWithoutMR(std::move(TSM)));
-    // optTSM.withModuleDo(
-    //     [](llvm::Module &m) { m.print(llvm::errs(), nullptr); });
+    if (current_thd->variables.should_time_compile_time) {
+      start = now();
+    }
     TSM = exit_on_err(exec_ctx->optimizeModuleWithoutMR(std::move(TSM)));
+    if (current_thd->variables.should_time_compile_time) {
+      end = now();
+      optimization_time += end - start;
+    }
+  }
+
+  if (debug_print) {
+    print_ir();
   }
 
   // TODO: Replace exit_on_err with better error-handling
@@ -113,17 +120,21 @@ void Item_compiled::print(const THD *thd, String *str,
                           enum_query_type query_type) const {
   double codegen_time_ms = duration<double>(codegen_time).count() * 1e3;
   double compile_time_ms = duration<double>(compile_time).count() * 1e3;
+  double optimization_time_ms =
+      duration<double>(optimization_time).count() * 1e3;
 
-  const char *format_str = "Item_compiled[%s](codegen=%.3f compile=%.3f) ";
+  const char *format_str =
+      "Item_compiled[%s](codegen=%.3f compile=%.3f opt=%.3f) ";
 
-  int str_size = std::snprintf(nullptr, 0, format_str, this->name.c_str(),
-                               codegen_time_ms, compile_time_ms);
+  int str_size =
+      std::snprintf(nullptr, 0, format_str, this->name.c_str(), codegen_time_ms,
+                    compile_time_ms, optimization_time_ms);
   auto size = static_cast<size_t>(str_size);
 
   auto buf = std::make_unique<char[]>(size);
 
   std::snprintf(buf.get(), size, format_str, this->name.c_str(),
-                codegen_time_ms, compile_time_ms);
+                codegen_time_ms, compile_time_ms, optimization_time_ms);
 
   // str->reserve(sizeof("Item_compiled") - 1);
   // str->append(STRING_WITH_LEN("Item_compiled"));

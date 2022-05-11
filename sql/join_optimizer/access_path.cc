@@ -52,6 +52,7 @@
 
 #include <vector>
 
+#include "sql/benchmark/benchmark.h"
 #include "sql/jit/jit_filter_iterator.h"
 
 using pack_rows::TableCollection;

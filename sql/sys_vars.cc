@@ -2961,6 +2961,12 @@ static Sys_var_bool Sys_should_jit_optimize(
     "Enable JIT optimizations during compilation of queries",
     HINT_UPDATEABLE SESSION_VAR(should_jit_optimize), CMD_LINE(OPT_ARG),
     DEFAULT(false));
+
+static Sys_var_bool Sys_should_jit_print(
+    "should_jit_print", "Enable JIT print debugs of the llvm IR",
+    HINT_UPDATEABLE SESSION_VAR(should_jit_print), CMD_LINE(OPT_ARG),
+    DEFAULT(false));
+
 // COMPILABLE SHOULD TIME COMPILE
 static Sys_var_bool Sys_should_time_compile_time(
     "should_time_compile_time", "Enable timing of compilation",

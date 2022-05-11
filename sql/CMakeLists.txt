@@ -403,6 +403,7 @@ SET(SQL_SHARED_SOURCES
   auth/role_tables.cc
   auth/sha2_password_common.cc
   auth/sha2_password.cc
+  benchmark/benchmark.cc
   ssl_wrapper_service.cc
   bootstrap.cc
   check_stack.cc

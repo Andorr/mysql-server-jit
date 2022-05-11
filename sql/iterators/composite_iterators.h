@@ -59,6 +59,8 @@
 #include "sql/table.h"
 #include "sql_string.h"
 
+#include "sql/benchmark/benchmark.h"
+
 class Cached_item;
 class FollowTailIterator;
 class Item;
@@ -84,7 +86,9 @@ class FilterIterator final : public RowIterator {
                  Item *condition)
       : RowIterator(thd), m_source(move(source)), m_condition(condition) {}
 
-  bool Init() override { return m_source->Init(); }
+  ~FilterIterator();
+
+  bool Init() override;
 
   int Read() override;
 

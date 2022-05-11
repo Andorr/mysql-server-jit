@@ -615,9 +615,6 @@ bool FinalizePlanForQueryBlock(THD *thd, Query_block *query_block,
           return true;
         }
 
-        /* if (path->type == AccessPath::FILTER) {
-          jit::compile_filter_iterator(path);
-        } */
         return false;
       },
       /*post_order_traversal=*/true);

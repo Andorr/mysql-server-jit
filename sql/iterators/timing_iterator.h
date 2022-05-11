@@ -109,6 +109,7 @@ bool TimingIterator<RealIterator>::Init() {
   steady_clock::time_point end = now();
   m_time_spent_in_first_row += end - start;
   m_first_row = true;
+
   return err;
 }
 
@@ -175,10 +176,11 @@ std::string TimingIterator<RealIterator>::TimingString() const {
     snprintf(buf, sizeof(buf), "(never executed)");
   } else {
     snprintf(buf, sizeof(buf),
-             "(time_spent_on_val_int_calls=%.3f) (actual time=%.3f..%.3f "
+             "(time_spent_on_val_int_calls=%.3f instruction_count=%lu)"
+             "(actual time=%.3f..%.3f "
              "rows=%lld loops=%" PRIu64 ")",
-             time_spent_on_val_int_calls_ms, first_row_ms / num_init_calls,
-             last_row_ms / num_init_calls,
+             time_spent_on_val_int_calls_ms, m_iterator.instruction_count,
+             first_row_ms / num_init_calls, last_row_ms / num_init_calls,
              llrintf(static_cast<double>(num_rows) / num_init_calls),
              num_init_calls);
   }

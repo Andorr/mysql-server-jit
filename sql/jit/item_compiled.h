@@ -41,6 +41,7 @@ class Item_compiled : public Item {
   // COMPILABLE COMPILE TIME TIMING
   std::chrono::steady_clock::time_point::duration compile_time{0};
   std::chrono::steady_clock::time_point::duration codegen_time{0};
+  std::chrono::steady_clock::time_point::duration optimization_time{0};
 
  public:
   Item_compiled(jit::JITExecutionContext *exec_ctx, Item *item) : Item() {
@@ -56,7 +57,8 @@ class Item_compiled : public Item {
 
   void codegen_item();
 
-  void jit_compile(jit::JITExecutionContext *exec_ctx, bool optimize);
+  void jit_compile(jit::JITExecutionContext *exec_ctx, bool optimize,
+                   bool debug_print);
 
   void print_ir();
 
