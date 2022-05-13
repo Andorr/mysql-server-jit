@@ -2494,8 +2494,6 @@ bool Item_func_not::can_compile() {
 }
 
 bool Item_func_eq::can_compile() {
-  printf("Item_func_eq called, comparing: %s and %s", args[0]->full_name(),
-         args[1]->full_name());
   can_compile_result = args[0]->can_compile() && args[1]->can_compile();
   return can_compile_result;
 }
