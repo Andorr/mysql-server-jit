@@ -1408,6 +1408,10 @@ void Query_expression::cleanup(THD *thd, bool full) {
     delete jit::current_exec_ctx;
     jit::current_exec_ctx = nullptr;
   }
+  if (thd->variables.should_count_instructions) {
+    close(jit::instruction_count_fd);
+    jit::instruction_count_fd = -1;
+  }
 }
 
 void Query_expression::destroy() {

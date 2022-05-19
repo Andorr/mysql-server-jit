@@ -64,6 +64,7 @@
 #include "template_utils.h"
 
 #include "sql/benchmark/benchmark.h"
+#include "sql/jit/jit_current_exec_ctx.h"
 
 using pack_rows::TableCollection;
 using std::string;
@@ -71,16 +72,20 @@ using std::swap;
 using std::vector;
 
 bool FilterIterator::Init() {
-  if (current_thd->variables.should_count_instructions) {
-    instruction_fd = benchmark::perf_init();
+  // if (current_thd->variables.should_count_instructions) {
+  //   instruction_fd = benchmark::perf_init();
+  // }
+  if (current_thd->variables.should_count_instructions &&
+      jit::instruction_count_fd == -1) {
+    jit::instruction_count_fd = benchmark::perf_init();
   }
   return m_source->Init();
 }
 
 FilterIterator::~FilterIterator() {
-  if (current_thd->variables.should_count_instructions) {
-    close(instruction_fd);
-  }
+  // if (current_thd->variables.should_count_instructions) {
+  //   close(instruction_fd);
+  // }
 }
 
 int FilterIterator::Read() {
@@ -95,12 +100,12 @@ int FilterIterator::Read() {
       start = now();
     }
     if (current_thd->variables.should_count_instructions) {
-      benchmark::perf_start(instruction_fd);
+      benchmark::perf_start(jit::instruction_count_fd);
     }
     bool matched = m_condition->val_int();
     if (current_thd->variables.should_count_instructions) {
-      benchmark::perf_stop(instruction_fd);
-      instruction_count += benchmark::perf_read(instruction_fd);
+      benchmark::perf_stop(jit::instruction_count_fd);
+      instruction_count += benchmark::perf_read(jit::instruction_count_fd);
     }
     if (current_thd->variables.should_time_val_int_call) {
       end = now();

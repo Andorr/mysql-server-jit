@@ -32,7 +32,6 @@ Item_compiled *jit::create_item_compiled_from_item(
   Item_compiled *compiled =
       new (thd->mem_root) Item_compiled(jit_exec_ctx, item);
   compiled->codegen_item();
-  // compiled->print_ir();
   compiled->jit_compile(jit_exec_ctx, thd->variables.should_jit_optimize,
                         thd->variables.should_jit_print);
   return compiled;

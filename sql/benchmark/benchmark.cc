@@ -2,6 +2,8 @@
 
 #include <stdlib.h>
 #include <algorithm>
+#include <cerrno>
+#include <cstring>
 #include <numeric>
 #include <tuple>
 #include <vector>
@@ -42,7 +44,8 @@ int benchmark::perf_init() {
 
   fd = perf_event_open(&pe, 0, -1, -1, 0);
   if (fd == -1) {
-    fprintf(stderr, "Error opening leader %llx\n", pe.config);
+    fprintf(stderr, "Error opening leader %llx %s\n", pe.config,
+            std::strerror(errno));
     exit(EXIT_FAILURE);
   }
   return fd;
